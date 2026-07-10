@@ -23,39 +23,47 @@ import ContactPage from './pages/ContactPage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import TermsPage from './pages/TermsPage'
 import ShippingPage from './pages/ShippingPage'
+import { CurrencyProvider } from './context/CurrencyContext'
+import AdminCoupons from './pages/admin/AdminCoupons'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
 
 export default function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<HomePage />} />
-            <Route path="shop" element={<ShopPage />} />
-            <Route path="shop/:category" element={<ShopPage />} />
-            <Route path="product/:id" element={<ProductPage />} />
-            <Route path="cart" element={<CartPage />} />
-            <Route path="checkout" element={<CheckoutPage />} />
-            <Route path="orders" element={<OrdersPage />} />
-            <Route path="dashboard" element={<DashboardPage />} />
-            <Route path="about" element={<AboutPage />} />
-            <Route path="order-success/:id" element={<OrderSuccessPage />} />
-            <Route path="contact" element={<ContactPage />} />
-            <Route path="privacy" element={<PrivacyPolicyPage />} />
-            <Route path="terms" element={<TermsPage />} />
-            <Route path="shipping" element={<ShippingPage />} />
-          </Route>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="orders" element={<AdminOrders />} />
-            <Route path="products" element={<AdminProducts />} />
-            <Route path="customers" element={<AdminCustomers />} />
-
-          </Route>
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
+        <CurrencyProvider>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<HomePage />} />
+              <Route path="shop" element={<ShopPage />} />
+              <Route path="shop/:category" element={<ShopPage />} />
+              <Route path="product/:id" element={<ProductPage />} />
+              <Route path="cart" element={<CartPage />} />
+              <Route path="checkout" element={<CheckoutPage />} />
+              <Route path="orders" element={<OrdersPage />} />
+              <Route path="dashboard" element={<DashboardPage />} />
+              <Route path="about" element={<AboutPage />} />
+              <Route path="order-success/:id" element={<OrderSuccessPage />} />
+              <Route path="contact" element={<ContactPage />} />
+              <Route path="privacy" element={<PrivacyPolicyPage />} />
+              <Route path="terms" element={<TermsPage />} />
+              <Route path="shipping" element={<ShippingPage />} />
+            </Route>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="customers" element={<AdminCustomers />} />
+              <Route path="coupons" element={<AdminCoupons />} />
+            </Route>
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </CurrencyProvider>
       </CartProvider>
     </AuthProvider>
   )

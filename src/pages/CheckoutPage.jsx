@@ -4,6 +4,8 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
+import { useCurrency } from '../context/CurrencyContext'
+import CouponInput from '../components/checkout/CouponInput'
 import { Lock, ArrowRight, Globe, MapPin } from 'lucide-react'
 
 const INDIAN_STATES = [
@@ -17,12 +19,14 @@ const INDIAN_STATES = [
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart } = useCart()
   const { user }    = useAuth()
+  const { formatPrice, currency } = useCurrency()
   const navigate    = useNavigate()
   const shipping    = cartTotal >= 499 ? 0 : 49
   const total       = cartTotal + shipping
 
   const [isInternational, setIsInternational] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [appliedCoupon, setAppliedCoupon] = useState(null)
   const [form, setForm] = useState({
     name:    user?.name || '',
     email:   user?.email || '',
@@ -33,6 +37,10 @@ export default function CheckoutPage() {
     pincode: '',
     country: 'India',
   })
+
+  // Discount + final payable amount
+  const discount   = appliedCoupon?.discount || 0
+  const finalTotal = Math.max(0, total - discount)
 
   if (cart.length === 0) return (
     <div className="max-w-xl mx-auto px-4 py-32 text-center">
@@ -71,29 +79,37 @@ export default function CheckoutPage() {
       const loaded = await loadRazorpay()
       if (!loaded) { toast.error('Payment service unavailable'); setLoading(false); return }
 
-      const { data } = await axios.post('/api/orders/create-razorpay', { amount: total })
+      // IMPORTANT: charge finalTotal (after coupon discount), always in INR
+      const { data } = await axios.post('/api/orders/create-razorpay', { amount: finalTotal })
 
       const options = {
-        key:         data.keyId,
-        amount:      data.amount,
-        currency:    'INR',
-        name:        'Radhe Bloom',
+        key: data.keyId,
+        amount: data.amount,
+        currency: 'INR',
+        name: 'Radhe Bloom',
         description: 'Divine Creations',
-        image:       'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png',
-        order_id:    data.orderId,
-        prefill:     { name: form.name, email: form.email, contact: form.phone },
-        theme:       { color: '#f97f0a' },
+        image: 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png',
+        order_id: data.orderId,
+        prefill: { name: form.name, email: form.email, contact: form.phone },
+        theme: { color: '#C9960A' },
         handler: async (response) => {
           try {
             const { data: order } = await axios.post('/api/orders/verify', {
-              razorpay_order_id:   response.razorpay_order_id,
+              razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature:  response.razorpay_signature,
+              razorpay_signature: response.razorpay_signature,
               shippingAddress: { ...form, country: 'India' },
               items: cart.map(i => ({ product: i.product._id, qty: i.qty, price: i.product.price })),
-              total,
+              total: finalTotal,
+              couponCode: appliedCoupon?.code || null,
+              discount: appliedCoupon?.discount || 0,
             })
             clearCart()
+            if (user && !user.phone && form.phone) {
+              try {
+                await axios.put('/api/auth/profile', { name: user.name, phone: form.phone })
+              } catch { }
+            }
             navigate(`/order-success/${order._id}`)
           } catch { toast.error('Payment verification failed') }
         },
@@ -114,7 +130,9 @@ export default function CheckoutPage() {
       const { data: order } = await axios.post('/api/orders/create-international', {
         shippingAddress: form,
         items: cart.map(i => ({ product: i.product._id, qty: i.qty, price: i.product.price })),
-        total,
+        total: finalTotal,
+        couponCode: appliedCoupon?.code || null,
+        discount: appliedCoupon?.discount || 0,
       })
       clearCart()
       navigate(`/order-success/${order._id}?international=true`)
@@ -160,18 +178,18 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* International Info Banner */}
+          {/* International Info Banner — WhatsApp removed, points to Contact page */}
           {isInternational && (
             <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4">
               <p className="font-bold text-blue-700 text-sm mb-1">🌍 International Order Process</p>
               <p className="text-blue-600 text-sm">
-                Place your order below. Our team will contact you within 24 hours via WhatsApp/Email
+                Place your order below. Our team will contact you within 24 hours via email
                 with Payoneer payment details. Order will be dispatched after payment confirmation.
               </p>
-              <a href="https://wa.me/919528078217" target="_blank" rel="noreferrer"
-                className="inline-flex items-center gap-1 text-green-600 font-bold text-sm mt-2 hover:underline">
-                💬 Chat with us first
-              </a>
+              <Link to="/contact"
+                className="inline-flex items-center gap-1 text-saffron-600 font-bold text-sm mt-2 hover:underline">
+                Contact us first →
+              </Link>
             </div>
           )}
 
@@ -246,20 +264,39 @@ export default function CheckoutPage() {
                     <p className="text-xs font-bold text-devotion-brown line-clamp-1">{item.product.name}</p>
                     <p className="text-xs text-cream-500">×{item.qty}</p>
                   </div>
-                  <span className="text-sm font-bold text-devotion-brown">₹{(item.product.price * item.qty).toFixed(0)}</span>
+                  <span className="text-sm font-bold text-devotion-brown">{formatPrice(item.product.price * item.qty)}</span>
                 </div>
               ))}
             </div>
 
             <hr className="border-cream-200 mb-4" />
+
+            {/* Coupon Input */}
+            <div className="mb-4">
+              <CouponInput
+                orderTotal={total}
+                appliedCoupon={appliedCoupon}
+                onApply={(data) => setAppliedCoupon(data)}
+                onRemove={() => setAppliedCoupon(null)}
+              />
+            </div>
+
             <div className="space-y-2 text-sm mb-5">
               <div className="flex justify-between text-devotion-brown/70">
-                <span>Subtotal</span><span>₹{cartTotal.toFixed(2)}</span>
+                <span>Subtotal</span><span>{formatPrice(cartTotal)}</span>
               </div>
               <div className="flex justify-between text-devotion-brown/70">
                 <span>Shipping</span>
-                <span className={shipping === 0 ? 'text-green-600 font-bold' : ''}>{shipping === 0 ? 'FREE' : `₹${shipping}`}</span>
+                <span className={shipping === 0 ? 'text-green-600 font-bold' : ''}>{shipping === 0 ? 'FREE' : formatPrice(shipping)}</span>
               </div>
+
+              {appliedCoupon && (
+                <div className="flex justify-between text-green-600 font-bold">
+                  <span>Coupon ({appliedCoupon.code})</span>
+                  <span>-{formatPrice(appliedCoupon.discount)}</span>
+                </div>
+              )}
+
               {isInternational && (
                 <div className="flex justify-between text-blue-600 text-xs">
                   <span>International shipping</span><span>Calculated separately</span>
@@ -268,7 +305,7 @@ export default function CheckoutPage() {
               <hr className="border-cream-200" />
               <div className="flex justify-between font-bold text-devotion-brown">
                 <span>Total</span>
-                <span className="font-display text-xl">₹{total.toFixed(2)}</span>
+                <span className="font-display text-xl">{formatPrice(finalTotal)}</span>
               </div>
             </div>
 
@@ -277,7 +314,7 @@ export default function CheckoutPage() {
               <button onClick={handleRazorpay} disabled={loading}
                 className="btn-primary w-full justify-center text-base disabled:opacity-60 disabled:cursor-not-allowed">
                 <Lock size={16} />
-                {loading ? 'Processing...' : `Pay ₹${total.toFixed(2)} via Razorpay`}
+                {loading ? 'Processing...' : `Pay ${formatPrice(finalTotal)} via Razorpay`}
               </button>
             ) : (
               <button onClick={handleInternational} disabled={loading}
@@ -295,8 +332,15 @@ export default function CheckoutPage() {
               </div>
             )}
 
+            {/* Currency disclaimer — only shows if USD selected */}
+            {currency === 'USD' && (
+              <p className="text-xs text-center text-cream-500 mt-2">
+                * Prices shown in USD for reference. You will be charged in INR (₹{finalTotal.toFixed(2)}) via Razorpay.
+              </p>
+            )}
+
             <p className="text-xs text-center text-cream-500 mt-3 flex items-center justify-center gap-1">
-              <Lock size={10} /> {isInternational ? 'Secure order • Payoneer payment via WhatsApp' : 'Secured by Razorpay'}
+              <Lock size={10} /> {isInternational ? 'Secure order • Payoneer payment via email' : 'Secured by Razorpay'}
             </p>
           </div>
         </div>

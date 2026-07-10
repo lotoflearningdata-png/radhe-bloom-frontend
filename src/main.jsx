@@ -20,7 +20,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             border: '1px solid #ffdba3',
             fontFamily: 'Lato, sans-serif',
           },
-          success: { iconTheme: { primary: '#f97f0a', secondary: '#fff' } },
+          success: { iconTheme: { primary: '#EDE8D0', secondary: '#fff' } },
         }}
       />
     </BrowserRouter>

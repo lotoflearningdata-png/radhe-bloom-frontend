@@ -3,7 +3,7 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 import { Plus, Edit, Trash2, X, Search } from 'lucide-react'
 
-const CATEGORIES = ['divine-idols','festive-sets','home-decor','kids-toys']
+const CATEGORIES = ['divine-idols','festive-sets','home-decor','kids-toys','candles','gift-sets','summer','rangoli']
 const EMPTY = { name:'', description:'', price:'', originalPrice:'', category:'divine-idols', colour:'', material:'', dimensions:'', weight:'', stock:50, featured:false, images:[''] }
 
 export default function AdminProducts() {

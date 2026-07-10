@@ -135,10 +135,7 @@ export default function OrdersPage() {
                       <p>Payment Method: Payoneer</p>
                       <p>Payment Status: <span className="font-bold capitalize">{order.paymentStatus}</span></p>
                       {order.paymentStatus === 'pending' && (
-                        <a href="https://wa.me/919528078217" target="_blank" rel="noreferrer"
-                          className="inline-block mt-2 text-green-600 font-bold hover:underline">
-                          💬 WhatsApp us to complete payment
-                        </a>
+                       <Link to="/contact" className="text-sm text-saffron-600 font-bold hover:underline">Need help? Contact Us</Link>
                       )}
                     </div>
                   )}
@@ -174,7 +171,7 @@ export default function OrdersPage() {
                     </p>
                   </div>
 
-                  <a href={`https://wa.me/919528078217?text=Hi%2C%20my%20order%20ID%20is%20${order._id}`}
+                  <a href={`https://wa.me/message/XNZVRD2CYFWPG1?text=Hi%2C%20my%20order%20ID%20is%20${order._id}`}
                     target="_blank" rel="noreferrer"
                     className="flex items-center gap-2 text-sm text-green-600 font-bold hover:underline">
                     💬 WhatsApp for order help

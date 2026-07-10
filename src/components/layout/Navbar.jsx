@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { ShoppingBag, User, Search, Menu, X, LogOut, Package, LayoutDashboard, ChevronDown } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { useCart } from '../../context/CartContext'
+import CurrencyToggle from '../ui/CurrencyToggle'
 
 const CATEGORIES = [
   { label: 'Divine Idols', to: '/shop/divine-idols' },
@@ -10,7 +11,7 @@ const CATEGORIES = [
   { label: 'Home Décor', to: '/shop/home-decor' },
   { label: 'Candles & Fragrance', to: '/shop/candles' },
   { label: 'Gift Sets', to: '/shop/gift-sets' },
-  { label: 'Summer Collection', to: '/shop/summer' },
+  //{ label: 'Summer Collection', to: '/shop/summer' },
   { label: 'Kids & Toys', to: '/shop/kids-toys' },
   { label: 'Rangoli & Decor', to: '/shop/rangoli' },
 ]
@@ -61,7 +62,7 @@ export default function Navbar() {
   return (
     <>
       <div className="bg-saffron-500 text-white text-center text-xs py-2 px-4 tracking-wide">
-        🌸 Free shipping on orders above ₹499 &nbsp;|&nbsp; Retail & Wholesale Welcome &nbsp;|&nbsp; WhatsApp: +91-9528078217
+        🌸 Free shipping on orders above ₹499 &nbsp;|&nbsp; Retail & Wholesale Welcome &nbsp;
       </div>
 
       <nav className={"sticky top-0 z-50 transition-all duration-300 " + (scrolled ? 'bg-white shadow-warm py-1' : 'bg-cream-50 py-2')}>
@@ -71,7 +72,7 @@ export default function Navbar() {
 <Link to="/" className="flex items-center gap-3 shrink-0">
   <div className="w-14 h-14 rounded-full border-2 border-cream-200 bg-cream-50 flex items-center justify-center overflow-hidden shadow-sm shrink-0">
     <img
-      src="https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png"
+      src="https://res.cloudinary.com/dayndbxgi/image/upload/v1783316490/WhatsApp_Image_2026-07-04_at_17.04.57_vgwfn3.jpg"
       alt="Radhe Bloom Logo"
       className="w-13 h-13 object-contain"
     />
@@ -125,6 +126,7 @@ export default function Navbar() {
 
           {/* Right Icons */}
           <div className="flex items-center gap-1.5">
+            <CurrencyToggle />
             <button onClick={() => setSearchOpen(!searchOpen)}
               className="p-2 rounded-full hover:bg-cream-100 text-devotion-brown transition-colors">
               <Search size={20} />

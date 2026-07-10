@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 import { SlidersHorizontal, ChevronDown, X } from 'lucide-react'
-import ProductCard from '../components/ui/ProductCard'
+import ProductCard from '../components/ui/ProductCard-currency'
 import SEO from '../components/ui/SEO'
 
 const CATEGORIES = [

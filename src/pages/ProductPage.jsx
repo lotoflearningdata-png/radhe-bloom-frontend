@@ -4,16 +4,18 @@ import axios from 'axios'
 import { ShoppingBag, ArrowLeft, Star, Package, Ruler, Weight, Palette, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import SEO from '../components/ui/SEO'
-import ProductCard from '../components/ui/ProductCard'
+import ProductCard from '../components/ui/ProductCard-currency'
+import { useCurrency } from '../context/CurrencyContext'
 
 export default function ProductPage() {
   const { id } = useParams()
   const { addToCart } = useCart()
-  const [product, setProduct]   = useState(null)
-  const [related, setRelated]   = useState([])
-  const [loading, setLoading]   = useState(true)
-  const [imgIdx, setImgIdx]     = useState(0)
-  const [qty, setQty]           = useState(1)
+  const [product, setProduct] = useState(null)
+  const [related, setRelated] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [imgIdx, setImgIdx] = useState(0)
+  const [qty, setQty] = useState(1)
+  const { formatPrice, currency } = useCurrency()
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -119,13 +121,22 @@ export default function ProductPage() {
           </div>
 
           {/* Price */}
-          <div className="flex items-end gap-3 mb-6">
-            <span className="font-display text-4xl text-devotion-brown font-bold">₹{product.price}</span>
-            {product.originalPrice && (
-              <>
-                <span className="text-cream-400 line-through text-xl mb-1">₹{product.originalPrice}</span>
-                <span className="bg-saffron-100 text-saffron-700 text-sm font-bold px-3 py-1 rounded-full mb-1">Save {discount}%</span>
-              </>
+          <div className="mb-6">
+            <div className="flex items-end gap-3">
+              <span className="font-display text-4xl text-devotion-brown font-bold">{formatPrice(product.price)}</span>
+              {product.originalPrice && (
+                <>
+                  <span className="text-cream-400 line-through text-xl mb-1">{formatPrice(product.originalPrice)}</span>
+                  <span className="bg-saffron-100 text-saffron-700 text-sm font-bold px-3 py-1 rounded-full mb-1">Save {discount}%</span>
+                </>
+              )}
+            </div>
+
+            {/* USD disclaimer */}
+            {currency === 'USD' && (
+              <p className="text-xs text-cream-500 mt-1">
+                * Displayed in USD for reference. Payment processed in INR via Razorpay.
+              </p>
             )}
           </div>
 
@@ -134,10 +145,10 @@ export default function ProductPage() {
           {/* Specs */}
           <div className="bg-cream-50 rounded-2xl p-5 mb-8 grid grid-cols-2 gap-3">
             {[
-              { icon: <Palette size={14} />, label: 'Colour',     value: product.colour },
-              { icon: <Package size={14} />, label: 'Material',   value: product.material },
-              { icon: <Ruler size={14} />,   label: 'Dimensions', value: product.dimensions },
-              { icon: <Weight size={14} />,  label: 'Weight',     value: product.weight },
+              { icon: <Palette size={14} />, label: 'Colour', value: product.colour },
+              { icon: <Package size={14} />, label: 'Material', value: product.material },
+              { icon: <Ruler size={14} />, label: 'Dimensions', value: product.dimensions },
+              { icon: <Weight size={14} />, label: 'Weight', value: product.weight },
             ].filter(s => s.value).map((spec, i) => (
               <div key={i} className="flex items-center gap-2">
                 <span className="text-saffron-500">{spec.icon}</span>
@@ -173,13 +184,6 @@ export default function ProductPage() {
               <ShoppingBag size={18} /> Add to Cart
             </button>
           </div>
-
-          {/* WhatsApp */}
-          <a href={`https://wa.me/919528078217?text=Hi%2C%20I'm%20interested%20in%20${encodeURIComponent(product.name)}`}
-            target="_blank" rel="noreferrer"
-            className="mt-3 flex items-center justify-center gap-2 w-full py-3 rounded-full border-2 border-green-400 text-green-600 font-bold hover:bg-green-50 transition-colors text-sm">
-            💬 Enquire on WhatsApp
-          </a>
         </div>
       </div>
 

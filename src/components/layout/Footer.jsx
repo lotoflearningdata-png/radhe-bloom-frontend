@@ -2,23 +2,23 @@ import { Link } from 'react-router-dom'
 import { Phone, Mail, MapPin, Instagram, Facebook } from 'lucide-react'
 
 const QUICK_LINKS = [
-  { label: 'Home',           to: '/' },
-  { label: 'All Products',   to: '/shop' },
-  { label: 'About Us',       to: '/about' },
-  { label: 'Contact Us',     to: '/contact' },
+  { label: 'Home', to: '/' },
+  { label: 'All Products', to: '/shop' },
+  { label: 'About Us', to: '/about' },
+  { label: 'Contact Us', to: '/contact' },
 ]
 
 const CATEGORIES = [
-  { label: 'Divine Idols',        to: '/shop/divine-idols' },
-  { label: 'Festive Sets',        to: '/shop/festive-sets' },
-  { label: 'Gift Sets',           to: '/shop/gift-sets' },
-  { label: 'Summer Collection',   to: '/shop/summer' },
+  { label: 'Divine Idols', to: '/shop/divine-idols' },
+  { label: 'Festive Sets', to: '/shop/festive-sets' },
+  { label: 'Gift Sets', to: '/shop/gift-sets' },
+  //{ label: 'Summer Collection', to: '/shop/summer' },
   { label: 'Candles & Fragrance', to: '/shop/candles' },
-  { label: 'Kids & Toys',         to: '/shop/kids-toys' },
+  { label: 'Kids & Toys', to: '/shop/kids-toys' },
 ]
 
 const LEGAL_LINKS = [
-  { label: 'Privacy Policy',   to: '/privacy' },
+  { label: 'Privacy Policy', to: '/privacy' },
   { label: 'Terms & Conditions', to: '/terms' },
   { label: 'Shipping & Returns', to: '/shipping' },
 ]
@@ -47,30 +47,20 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-sm leading-relaxed text-cream-400 mb-5">
-              Handcrafted devotional products from the sacred city of Mathura.
-              Bringing divine art into every home since 2009.
+              Handcrafted devotional products.
+              Bringing divine art into every home.
             </p>
             <div className="space-y-2 text-sm">
-              <a href="tel:+919528078217" className="flex items-center gap-2 text-cream-400 hover:text-saffron-400 transition-colors">
-                <Phone size={14} /> +91-9528078217
+              <a href="mailto:radhebloom@gmail.com" className="flex items-center gap-2 text-cream-400 hover:text-saffron-400 transition-colors">
+                <Mail size={14} /> radhebloom@gmail.com
               </a>
-              <a href="mailto:hello@radhebloom.in" className="flex items-center gap-2 text-cream-400 hover:text-saffron-400 transition-colors">
-                <Mail size={14} /> hello@radhebloom.in
+              <a href="https://instagram.com/radhebloom" target="_blank" rel="noreferrer"
+                className="flex items-center gap-2 text-cream-400 hover:text-saffron-400 transition-colors">
+                <Instagram size={14} /> radhebloom
               </a>
               <div className="flex items-center gap-2 text-cream-400">
-                <MapPin size={14} /> Mathura, Uttar Pradesh
+                <MapPin size={14} /> Kichha, Uttarakhand
               </div>
-            </div>
-            {/* Social */}
-            <div className="flex gap-3 mt-5">
-              <a href="https://instagram.com/radhebloom" target="_blank" rel="noreferrer"
-                className="w-8 h-8 rounded-full bg-white/10 hover:bg-saffron-500 flex items-center justify-center transition-colors">
-                <Instagram size={14} className="text-white" />
-              </a>
-              <a href="https://wa.me/919528078217" target="_blank" rel="noreferrer"
-                className="w-8 h-8 rounded-full bg-white/10 hover:bg-green-500 flex items-center justify-center transition-colors">
-                <span className="text-white text-xs font-bold">W</span>
-              </a>
             </div>
           </div>
 
@@ -108,7 +98,7 @@ export default function Footer() {
             <p className="text-sm text-cream-400 leading-relaxed mb-5">
               Bulk orders at special rates. Serving retailers, decorators and corporate buyers across India.
             </p>
-            <a href="https://wa.me/919528078217?text=Hi%20Radhe%20Bloom%2C%20I'm%20interested%20in%20wholesale"
+            <a href="https://wa.me/message/XNZVRD2CYFWPG1?text=Hi%20Radhe%20Bloom%2C%20I'm%20interested%20in%20wholesale"
               target="_blank" rel="noreferrer"
               className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-5 py-2.5 rounded-full text-sm transition-colors">
               💬 WhatsApp for Wholesale
@@ -116,7 +106,7 @@ export default function Footer() {
 
             {/* Trust badges */}
             <div className="mt-6 space-y-2">
-              {['🔒 Secure Payments via Razorpay', '📦 Pan India Shipping', '✅ 100% Handcrafted'].map((badge, i) => (
+              {['🔒 Secure Payments via Razorpay', '📦 Worldwide Shipping', '✅ 100% Handcrafted'].map((badge, i) => (
                 <p key={i} className="text-xs text-cream-500">{badge}</p>
               ))}
             </div>
@@ -149,7 +139,7 @@ export default function Footer() {
 
           {/* Grievance Officer one-liner */}
           <p className="text-xs text-cream-600 text-center mt-3">
-            Grievance Officer: hello@radhebloom.in | +91-9528078217 | Response within 48 hours
+            Grievance Officer: radhebloom@gmail.com | Response within 48 hours
             {' · '}
             <Link to="/terms#grievance" className="hover:text-saffron-400 transition-colors">View Details</Link>
           </p>

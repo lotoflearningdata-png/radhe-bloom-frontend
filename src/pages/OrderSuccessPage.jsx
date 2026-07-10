@@ -44,10 +44,6 @@ export default function OrderSuccessPage() {
         <Link to="/orders" className="btn-primary">
           <Package size={16} /> Track Order
         </Link>
-        <a href="https://wa.me/919528078217" target="_blank" rel="noreferrer"
-          className="btn-outline">
-          <MessageCircle size={16} /> WhatsApp Us
-        </a>
         <Link to="/shop" className="btn-outline">Continue Shopping</Link>
       </div>
     </div>

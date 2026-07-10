@@ -3,13 +3,14 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import {
   LayoutDashboard, Package, ShoppingBag, Users,
-  LogOut, Menu, X, ChevronRight
+  LogOut, Menu, X, ChevronRight, Tag
 } from 'lucide-react'
 
 const NAV = [
   { label: 'Dashboard',  to: '/admin',          icon: LayoutDashboard },
   { label: 'Orders',     to: '/admin/orders',   icon: ShoppingBag },
   { label: 'Products',   to: '/admin/products', icon: Package },
+  { label: 'Coupons',    to: '/admin/coupons',  icon: Tag }, 
   { label: 'Customers',  to: '/admin/customers',icon: Users },
 ]
 

@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom'
 import { X, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react'
 import { useCart } from '../../context/CartContext'
+import { useCurrency } from '../../context/CurrencyContext'
 
 export default function CartDrawer() {
   const { cart, cartOpen, setCartOpen, removeFromCart, updateQty, cartTotal } = useCart()
+  const { formatPrice } = useCurrency()
 
   if (!cartOpen) return null
 
@@ -50,7 +52,7 @@ export default function CartDrawer() {
                   <h4 className="font-display text-sm text-devotion-brown leading-snug line-clamp-2 mb-1">
                     {item.product.name}
                   </h4>
-                  <p className="text-saffron-600 font-bold text-sm">₹{item.product.price}</p>
+                  <p className="text-saffron-600 font-bold text-sm">{formatPrice(item.product.price)}</p>
                   <div className="flex items-center gap-2 mt-2">
                     <button onClick={() => updateQty(item.product._id, item.qty - 1)}
                       className="w-7 h-7 rounded-full bg-cream-100 hover:bg-saffron-100 flex items-center justify-center transition-colors">
@@ -76,7 +78,7 @@ export default function CartDrawer() {
           <div className="border-t border-cream-200 bg-white px-5 py-4 space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-devotion-brown">Subtotal</span>
-              <span className="font-display text-xl text-devotion-brown font-bold">₹{cartTotal.toFixed(2)}</span>
+              <span className="font-display text-xl text-devotion-brown font-bold">{formatPrice(cartTotal)}</span>
             </div>
             <p className="text-xs text-cream-500 text-center">Shipping calculated at checkout</p>
             <Link to="/checkout" onClick={() => setCartOpen(false)}

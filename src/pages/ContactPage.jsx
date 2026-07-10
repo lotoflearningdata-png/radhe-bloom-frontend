@@ -75,9 +75,9 @@ export default function ContactPage() {
             </motion.div>
 
             {[
-              { icon: Phone,     label: 'Call / WhatsApp', value: '+91-9528078217',     href: 'tel:+919528078217',          color: 'bg-green-50 text-green-600 border-green-200' },
-              { icon: Mail,      label: 'Email Us',         value: 'hello@radhebloom.in', href: 'mailto:hello@radhebloom.in', color: 'bg-blue-50 text-blue-600 border-blue-200' },
-              { icon: MapPin,    label: 'Visit Us',         value: 'Mathura, Uttar Pradesh, India', href: '#',             color: 'bg-orange-50 text-orange-600 border-orange-200' },
+              { icon: Phone,     label: 'WhatsApp',   href: 'https://wa.me/message/XNZVRD2CYFWPG1',          color: 'bg-green-50 text-green-600 border-green-200' },
+              { icon: Mail,      label: 'Email Us',         value: 'radhebloom@gmail.com', href: 'mailto:radhebloom@gmail.com', color: 'bg-blue-50 text-blue-600 border-blue-200' },
+              { icon: MapPin,    label: 'Visit Us',         value: 'Kichha, Uttarakhand, India', href: '#',             color: 'bg-orange-50 text-orange-600 border-orange-200' },
               { icon: Clock,     label: 'Business Hours',   value: 'Mon–Sat: 9am – 7pm', href: '#',                        color: 'bg-purple-50 text-purple-600 border-purple-200' },
             ].map((item, i) => {
               const Icon = item.icon
@@ -99,7 +99,7 @@ export default function ContactPage() {
 
             {/* WhatsApp Quick Button */}
             <motion.a
-              href="https://wa.me/919528078217?text=Hi%20Radhe%20Bloom%2C%20I%20have%20a%20query"
+              href="https://wa.me/message/XNZVRD2CYFWPG1?text=Hi%20Radhe%20Bloom%2C%20I%20have%20a%20query"
               target="_blank" rel="noreferrer"
               initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={5}
               whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
@@ -130,7 +130,7 @@ export default function ContactPage() {
                 <div className="flex gap-3 justify-center">
                   <button onClick={() => { setSubmitted(false); setForm({ name:'', email:'', phone:'', subject:'', message:'' }) }}
                     className="btn-outline text-sm">Send Another Message</button>
-                  <a href="https://wa.me/919528078217" target="_blank" rel="noreferrer"
+                  <a href="https://wa.me/message/XNZVRD2CYFWPG1" target="_blank" rel="noreferrer"
                     className="btn-primary text-sm">💬 WhatsApp Us</a>
                 </div>
               </motion.div>
