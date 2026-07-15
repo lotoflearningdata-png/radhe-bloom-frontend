@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
-import { Package, ChevronDown, ChevronUp, Globe, MapPin } from 'lucide-react'
+import toast from 'react-hot-toast'
+import { Package, ChevronDown, ChevronUp, Globe, MapPin, FileDown } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { thumbUrl } from '../utils/image'
 
 const STATUS_COLORS = {
   pending:    'bg-yellow-100 text-yellow-700',
@@ -48,6 +50,24 @@ export default function OrdersPage() {
   const [orders, setOrders]   = useState([])
   const [loading, setLoading] = useState(true)
   const [expanded, setExpanded] = useState(null)
+  const [downloading, setDownloading] = useState(null)
+
+  const downloadInvoice = async (orderId) => {
+    setDownloading(orderId)
+    try {
+      const { data } = await axios.get(`/api/orders/${orderId}/invoice`, { responseType: 'blob' })
+      const url = URL.createObjectURL(data)
+      const a   = document.createElement('a')
+      a.href     = url
+      a.download = `Invoice_${orderId.slice(-8).toUpperCase()}.pdf`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      toast.error('Could not download invoice. Please try again.')
+    } finally {
+      setDownloading(null)
+    }
+  }
 
   useEffect(() => {
     if (user) {
@@ -103,7 +123,7 @@ export default function OrdersPage() {
                 <div className="flex gap-2 mb-3">
                   {order.items?.slice(0, 4).map((item, i) => (
                     <img key={i}
-                      src={item.product?.images?.[0] || 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png'}
+                      src={thumbUrl(item.product?.images?.[0] || 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png', 200)}
                       alt="" className="w-12 h-12 rounded-lg object-cover bg-cream-100" />
                   ))}
                   {order.items?.length > 4 && (
@@ -155,7 +175,7 @@ export default function OrdersPage() {
                     <div className="space-y-2">
                       {order.items?.map((item, i) => (
                         <div key={i} className="flex justify-between text-sm">
-                          <span className="text-devotion-brown">{item.product?.name} ×{item.qty}</span>
+                          <span className="text-devotion-brown">{item.product?.name}{item.color ? ` (${item.color})` : ''} ×{item.qty}</span>
                           <span className="font-bold">₹{(item.price * item.qty).toFixed(0)}</span>
                         </div>
                       ))}
@@ -170,6 +190,13 @@ export default function OrdersPage() {
                       {order.shippingAddress?.city}, {order.shippingAddress?.state} - {order.shippingAddress?.pincode}
                     </p>
                   </div>
+
+                  {order.paymentStatus === 'paid' && (
+                    <button onClick={() => downloadInvoice(order._id)} disabled={downloading === order._id}
+                      className="flex items-center gap-2 text-sm text-saffron-600 font-bold hover:underline disabled:opacity-50">
+                      <FileDown size={16} /> {downloading === order._id ? 'Preparing invoice…' : 'Download Invoice'}
+                    </button>
+                  )}
 
                   <a href={`https://wa.me/message/XNZVRD2CYFWPG1?text=Hi%2C%20my%20order%20ID%20is%20${order._id}`}
                     target="_blank" rel="noreferrer"

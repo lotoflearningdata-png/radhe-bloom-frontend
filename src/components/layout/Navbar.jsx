@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { ShoppingBag, User, Search, Menu, X, LogOut, Package, LayoutDashboard, ChevronDown } from 'lucide-react'
+import { ShoppingBag, User, Search, Menu, X, LogOut, Package, LayoutDashboard, ChevronDown, Heart } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { useCart } from '../../context/CartContext'
+import { useWishlist } from '../../context/WishlistContext'
 import CurrencyToggle from '../ui/CurrencyToggle'
 
 const CATEGORIES = [
@@ -26,6 +27,7 @@ const NAV_LINKS = [
 export default function Navbar() {
   const { user, logout } = useAuth()
   const { cartCount, setCartOpen } = useCart()
+  const { wishlistCount } = useWishlist()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [search, setSearch] = useState('')
@@ -62,7 +64,7 @@ export default function Navbar() {
   return (
     <>
       <div className="bg-saffron-500 text-white text-center text-xs py-2 px-4 tracking-wide">
-        🌸 Free shipping on orders above ₹499 &nbsp;|&nbsp; Retail & Wholesale Welcome &nbsp;
+        🌸 Free shipping on orders above ₹999 &nbsp;|&nbsp; Retail & Wholesale Welcome &nbsp;
       </div>
 
       <nav className={"sticky top-0 z-50 transition-all duration-300 " + (scrolled ? 'bg-white shadow-warm py-1' : 'bg-cream-50 py-2')}>
@@ -132,6 +134,16 @@ export default function Navbar() {
               <Search size={20} />
             </button>
 
+            <Link to="/wishlist"
+              className="p-2 rounded-full hover:bg-cream-100 text-devotion-brown transition-colors relative">
+              <Heart size={20} />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-saffron-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                  {wishlistCount > 9 ? '9+' : wishlistCount}
+                </span>
+              )}
+            </Link>
+
             <button onClick={() => setCartOpen(true)}
               className="p-2 rounded-full hover:bg-cream-100 text-devotion-brown transition-colors relative">
               <ShoppingBag size={20} />
@@ -198,6 +210,9 @@ export default function Navbar() {
                 {l.label}
               </Link>
             ))}
+            <Link to="/wishlist" className="block px-4 py-2.5 rounded-xl text-devotion-brown hover:bg-cream-50 hover:text-saffron-600 font-medium">
+              My Wishlist {wishlistCount > 0 ? `(${wishlistCount})` : ''}
+            </Link>
             <p className="text-xs font-bold text-cream-400 uppercase tracking-wider px-4 pt-3 pb-1">Categories</p>
             {CATEGORIES.map(cat => (
               <Link key={cat.to} to={cat.to} className="block px-4 py-2 rounded-xl text-devotion-brown hover:bg-cream-50 hover:text-saffron-600 text-sm">

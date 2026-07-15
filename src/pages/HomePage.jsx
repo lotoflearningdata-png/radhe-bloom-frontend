@@ -8,14 +8,14 @@ import SEO from '../components/ui/SEO'
 import CategorySection from '../components/ui/CategorySection' // Imported new component
 
 const FEATURES = [
-  { icon: '🚚', title: 'Free Shipping',     desc: 'On all orders above ₹499', color: 'bg-orange-50 text-orange-500' },
-  { icon: '🔄', title: '7-Day Returns',     desc: 'Easy hassle-free returns',  color: 'bg-blue-50 text-blue-500' },
+  { icon: '🚚', title: 'Free Shipping',     desc: 'On all orders above ₹999', color: 'bg-orange-50 text-orange-500' },
+  { icon: '🔄', title: '24–48 Hr Returns',  desc: 'Easy hassle-free returns',  color: 'bg-blue-50 text-blue-500' },
   { icon: '🤝', title: 'Wholesale Welcome', desc: 'Bulk orders at best rates', color: 'bg-green-50 text-green-500' },
   { icon: '✅', title: '100% Authentic',    desc: 'Handcrafted with love',     color: 'bg-purple-50 text-purple-500' },
 ]
 
 const SLIDES = [
-  { tag: 'New Arrivals',        title: 'Bring the Divine', sub: 'Home',   desc: 'Handcrafted Krishna idols & MDF décor from the heart of Mathura', cta: 'Explore Collection', to: '/shop/divine-idols' },
+  { tag: 'New Arrivals',        title: 'Bring the Divine', sub: 'Home',   desc: 'Handcrafted Krishna idols & MDF décor', cta: 'Explore Collection', to: '/shop/divine-idols' },
   { tag: 'Wholesale Available', title: 'Retail & Bulk',    sub: 'Orders', desc: 'Whether one or a hundred, we serve you with equal devotion and care', cta: 'Shop Now', to: '/shop' },
 ]
 
@@ -252,7 +252,7 @@ export default function HomePage() {
                 The Janmashtami <br className="hidden md:block"/>Collection
               </h2>
               <p className="text-[#3D2B1F]/80 text-base leading-relaxed mb-0">
-                Celebrate the divine birth with our hand-picked selection from Mathura. Discover premium Makhan Chor sets, elegant Dahi Handi décor, Bal Krishna idols, and handcrafted Ashta Sakhi figurines designed to elevate your home mandir.
+                Celebrate the divine birth with our hand-picked selection. Discover premium Makhan Chor sets, elegant Dahi Handi décor, Bal Krishna idols, and handcrafted Ashta Sakhi figurines designed to elevate your home mandir.
               </p>
             </div>
 
@@ -285,7 +285,7 @@ export default function HomePage() {
             <p className="section-subtitle mb-3">✦ Perfect Presents ✦</p>
             <h2 className="section-title mb-4">Gift Sets & Hampers</h2>
             <p className="text-devotion-brown/70 leading-relaxed mb-7 text-sm">
-              Curated divine gifts for weddings, housewarming, festivals & corporate gifting — beautifully packaged with love from Mathura.
+              Curated divine gifts for weddings, housewarming, festivals & corporate gifting — beautifully packaged with love.
             </p>
             <div className="space-y-3 mb-8">
               {GIFT_SETS.map((g, i) => (

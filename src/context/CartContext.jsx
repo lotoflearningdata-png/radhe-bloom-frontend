@@ -25,22 +25,25 @@ export function CartProvider({ children }) {
     } catch {}
   }
 
-  const addToCart = async (product, qty = 1) => {
+  const sameItem = (i, productId, color) =>
+    i.product._id === productId && (i.color || '') === (color || '')
+
+  const addToCart = async (product, qty = 1, color = null) => {
     if (user) {
       try {
-        const { data } = await axios.post('/api/cart/add', { productId: product._id, qty })
+        const { data } = await axios.post('/api/cart/add', { productId: product._id, qty, color })
         setCart(data.items)
         toast.success('Added to cart 🛕')
       } catch (e) {
         toast.error(e.response?.data?.message || 'Error adding to cart')
       }
     } else {
-      const existing = cart.find(i => i.product._id === product._id)
+      const existing = cart.find(i => sameItem(i, product._id, color))
       let updated
       if (existing) {
-        updated = cart.map(i => i.product._id === product._id ? { ...i, qty: i.qty + qty } : i)
+        updated = cart.map(i => sameItem(i, product._id, color) ? { ...i, qty: i.qty + qty } : i)
       } else {
-        updated = [...cart, { product, qty }]
+        updated = [...cart, { product, qty, color: color || undefined }]
       }
       setCart(updated)
       localStorage.setItem('rb_cart', JSON.stringify(updated))
@@ -49,24 +52,24 @@ export function CartProvider({ children }) {
     setCartOpen(true)
   }
 
-  const removeFromCart = async (productId) => {
+  const removeFromCart = async (productId, color = null) => {
     if (user) {
-      const { data } = await axios.delete(`/api/cart/remove/${productId}`)
+      const { data } = await axios.delete(`/api/cart/remove/${productId}?color=${encodeURIComponent(color || '')}`)
       setCart(data.items)
     } else {
-      const updated = cart.filter(i => i.product._id !== productId)
+      const updated = cart.filter(i => !sameItem(i, productId, color))
       setCart(updated)
       localStorage.setItem('rb_cart', JSON.stringify(updated))
     }
   }
 
-  const updateQty = async (productId, qty) => {
-    if (qty < 1) return removeFromCart(productId)
+  const updateQty = async (productId, qty, color = null) => {
+    if (qty < 1) return removeFromCart(productId, color)
     if (user) {
-      const { data } = await axios.put('/api/cart/update', { productId, qty })
+      const { data } = await axios.put('/api/cart/update', { productId, qty, color })
       setCart(data.items)
     } else {
-      const updated = cart.map(i => i.product._id === productId ? { ...i, qty } : i)
+      const updated = cart.map(i => sameItem(i, productId, color) ? { ...i, qty } : i)
       setCart(updated)
       localStorage.setItem('rb_cart', JSON.stringify(updated))
     }

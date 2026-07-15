@@ -28,9 +28,9 @@ export default function ShippingPage() {
         {/* Quick Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
-            { icon: '🇮🇳', title: 'Domestic Shipping', value: '3–7 business days', sub: 'Free above ₹499' },
+            { icon: '🇮🇳', title: 'Domestic Shipping', value: '3–7 business days', sub: 'Free above ₹999' },
             { icon: '🌍', title: 'International', value: '10–21 business days', sub: 'Charges apply' },
-            { icon: '🔄', title: 'Returns', value: '7 days window', sub: 'Damaged items only' },
+            { icon: '🔄', title: 'Returns', value: '24–48 hours window', sub: 'Damaged items only' },
           ].map((card, i) => (
             <div key={i} className="bg-cream-50 border border-cream-200 rounded-2xl p-5 text-center">
               <div className="text-3xl mb-2">{card.icon}</div>
@@ -63,12 +63,12 @@ export default function ShippingPage() {
               </thead>
               <tbody>
                 <tr>
-                  <td className="p-3 border border-cream-200">Below ₹499</td>
+                  <td className="p-3 border border-cream-200">Below ₹999</td>
                   <td className="p-3 border border-cream-200 text-devotion-brown font-bold">₹49</td>
                   <td className="p-3 border border-cream-200">3–7 business days</td>
                 </tr>
                 <tr className="bg-green-50">
-                  <td className="p-3 border border-cream-200">₹499 and above</td>
+                  <td className="p-3 border border-cream-200">₹999 and above</td>
                   <td className="p-3 border border-cream-200 text-green-600 font-bold">FREE</td>
                   <td className="p-3 border border-cream-200">3–7 business days</td>
                 </tr>
@@ -107,9 +107,9 @@ export default function ShippingPage() {
 
         <Section title="5. Returns Policy">
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 mb-4">
-            <p className="font-bold text-blue-700 mb-2">📦 7-Day Return Window</p>
+            <p className="font-bold text-blue-700 mb-2">📦 24–48 Hour Return Window</p>
             <p className="text-blue-700 text-sm">
-              You may request a return within <strong>7 days of delivery</strong> for eligible items.
+              You may request a return within <strong>24–48 hours of delivery</strong> for eligible items.
             </p>
           </div>
 
@@ -134,7 +134,7 @@ export default function ShippingPage() {
         <Section title="6. How to Initiate a Return">
           <div className="space-y-4">
             {[
-              { step: '01', title: 'Contact Us Within 7 Days', desc: 'WhatsApp us at +91-9528078217 or email hello@radhebloom.in with your Order ID and photos/videos of the damaged product.' },
+              { step: '01', title: 'Contact Us Within 24–48 Hours', desc: 'WhatsApp us at +91-9528078217 or email radhebloom@gmail.com with your Order ID and photos/videos of the damaged product.' },
               { step: '02', title: 'Return Approval', desc: 'Our team will review your request within 48 hours and confirm if the return is approved.' },
               { step: '03', title: 'Ship the Product Back', desc: 'Once approved, we will arrange a pickup or guide you to ship the product back. For damage claims, we cover return shipping costs.' },
               { step: '04', title: 'Refund Processed', desc: 'After receiving and inspecting the returned product, your refund will be processed within 5–7 business days.' },
@@ -188,7 +188,7 @@ export default function ShippingPage() {
           </p>
           <ul className="list-disc pl-6 mt-3 space-y-2">
             <li>WhatsApp: +91-9528078217</li>
-            <li>Email: hello@radhebloom.in with your Order ID and AWB number</li>
+            <li>Email: radhebloom@gmail.com with your Order ID and AWB number</li>
           </ul>
           <p className="mt-3">
             We will investigate with the courier partner and resolve the issue within 5 business days.
@@ -204,7 +204,7 @@ export default function ShippingPage() {
               className="flex items-center gap-2 bg-green-500 text-white font-bold px-5 py-2.5 rounded-full text-sm hover:bg-green-600 transition-colors">
               💬 WhatsApp Us
             </a>
-            <a href="mailto:hello@radhebloom.in"
+            <a href="mailto:radhebloom@gmail.com"
               className="flex items-center gap-2 bg-saffron-500 text-white font-bold px-5 py-2.5 rounded-full text-sm hover:bg-saffron-600 transition-colors">
               📧 Email Us
             </a>

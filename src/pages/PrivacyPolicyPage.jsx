@@ -21,7 +21,7 @@ export default function PrivacyPolicyPage() {
         <div>
           <p>
             At <strong className="text-devotion-brown">Radhe Bloom</strong> ("we", "us", or "our"), operated from
-            Mathura, Uttar Pradesh, India, we are committed to protecting your personal information and your
+            Kichha, Uttarakhand, India, we are committed to protecting your personal information and your
             right to privacy. This Privacy Policy explains how we collect, use, and safeguard your information
             when you visit our website radhebloom.in and make purchases from us.
           </p>
@@ -80,7 +80,7 @@ export default function PrivacyPolicyPage() {
             <li>Passwords are encrypted using bcrypt — we cannot read your password.</li>
             <li>All data transmission is encrypted via HTTPS/SSL.</li>
             <li>We retain your order data for 7 years as required by Indian tax laws (GST compliance).</li>
-            <li>You may request deletion of your account data by emailing us at hello@radhebloom.in.</li>
+            <li>You may request deletion of your account data by emailing us at radhebloom@gmail.com.</li>
           </ul>
         </Section>
 
@@ -101,7 +101,7 @@ export default function PrivacyPolicyPage() {
             <li>Withdraw consent for marketing communications at any time</li>
             <li>Lodge a complaint with our Grievance Officer (see below)</li>
           </ul>
-          <p className="mt-3">To exercise any of these rights, contact us at <strong>hello@radhebloom.in</strong></p>
+          <p className="mt-3">To exercise any of these rights, contact us at <strong>radhebloom@gmail.com</strong></p>
         </Section>
 
         <Section title="8. Children's Privacy">
@@ -125,9 +125,9 @@ export default function PrivacyPolicyPage() {
             <p className="font-bold text-devotion-brown mb-3">For any privacy concerns, contact our Grievance Officer:</p>
             <div className="space-y-1 text-sm">
               <p><strong>Grievance Officer:</strong> Radhe Bloom Management</p>
-              <p><strong>Email:</strong> hello@radhebloom.in</p>
+              <p><strong>Email:</strong> radhebloom@gmail.com</p>
               <p><strong>Phone:</strong> +91-9528078217</p>
-              <p><strong>Address:</strong> Mathura, Uttar Pradesh, India</p>
+              <p><strong>Address:</strong> Kichha, Uttarakhand, India</p>
               <p><strong>Response Time:</strong> Within 48 hours of receiving your complaint</p>
             </div>
           </div>

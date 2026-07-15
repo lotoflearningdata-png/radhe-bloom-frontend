@@ -36,9 +36,9 @@ export default function Footer() {
             <div className="flex items-center gap-3 mb-5">
               <div className="w-12 h-12 rounded-full bg-cream-50 border-2 border-cream-200/30 flex items-center justify-center overflow-hidden shrink-0">
                 <img
-                  src="https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png"
+                  src="https://res.cloudinary.com/dayndbxgi/image/upload/v1783316490/WhatsApp_Image_2026-07-04_at_17.09.47_qbsied.jpg"
                   alt="Radhe Bloom"
-                  className="w-10 h-10 object-contain"
+                  className="w-full h-full object-cover scale-150"
                 />
               </div>
               <div>
@@ -121,7 +121,7 @@ export default function Footer() {
 
             {/* Copyright */}
             <p className="text-xs text-cream-500 text-center sm:text-left">
-              © {new Date().getFullYear()} Radhe Bloom. All rights reserved. | Mathura, Uttar Pradesh, India
+              © {new Date().getFullYear()} Radhe Bloom. All rights reserved. | Kichha, Uttarakhand, India
             </p>
 
             {/* Legal Links */}

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
-import { Plus, Edit, Trash2, X, Search } from 'lucide-react'
+import { Plus, Edit, Trash2, X, Search, ChevronUp, ChevronDown } from 'lucide-react'
 
 const CATEGORIES = ['divine-idols','festive-sets','home-decor','kids-toys','candles','gift-sets','summer','rangoli']
-const EMPTY = { name:'', description:'', price:'', originalPrice:'', category:'divine-idols', colour:'', material:'', dimensions:'', weight:'', stock:50, featured:false, images:[''] }
+const EMPTY = { name:'', description:'', price:'', originalPrice:'', category:'divine-idols', colour:'', material:'', dimensions:'', weight:'', stock:50, featured:false, images:[''], colorVariants:[] }
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([])
@@ -14,6 +14,7 @@ export default function AdminProducts() {
   const [saving, setSaving]     = useState(false)
   const [search, setSearch]     = useState('')
   const [deleting, setDeleting] = useState(null)
+  const [variantInput, setVariantInput] = useState('')
 
   useEffect(() => { fetchProducts() }, [])
 
@@ -25,11 +26,28 @@ export default function AdminProducts() {
     } finally { setLoading(false) }
   }
 
-  const openAdd  = () => { setForm(EMPTY); setModal('add') }
+  const openAdd  = () => { setForm(EMPTY); setVariantInput(''); setModal('add') }
   const openEdit = (p) => {
-    setForm({ ...p, images: p.images?.length ? p.images : [''] })
+    setForm({ ...p, images: p.images?.length ? p.images : [''], colorVariants: p.colorVariants || [] })
+    setVariantInput('')
     setModal('edit')
   }
+
+  const addVariant = () => {
+    const v = variantInput.trim()
+    if (!v) return
+    if (form.colorVariants?.includes(v)) return toast.error('This colour is already added')
+    setForm(f => ({ ...f, colorVariants: [...(f.colorVariants || []), v] }))
+    setVariantInput('')
+  }
+
+  const moveImage = (i, dir) => setForm(f => {
+    const imgs = [...(f.images || [])]
+    const j = i + dir
+    if (j < 0 || j >= imgs.length) return f
+    ;[imgs[i], imgs[j]] = [imgs[j], imgs[i]]
+    return { ...f, images: imgs }
+  })
 
   const handleSave = async () => {
     if (!form.name || !form.price || !form.category) return toast.error('Name, price and category are required')
@@ -169,11 +187,42 @@ export default function AdminProducts() {
                     className="input-field resize-none" />
                 </div>
 
+                {/* Colour Variants */}
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-devotion-brown/70 mb-1.5 uppercase tracking-wider">Colour Variants (optional)</label>
+                  <div className="flex gap-2 mb-2">
+                    <input type="text" value={variantInput}
+                      onChange={e => setVariantInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addVariant() } }}
+                      placeholder="e.g. Red, Royal Blue, Green"
+                      className="input-field text-sm flex-1" />
+                    <button onClick={addVariant}
+                      className="px-4 py-2 bg-saffron-100 text-saffron-600 rounded-xl text-sm font-bold hover:bg-saffron-200">Add</button>
+                  </div>
+                  {form.colorVariants?.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {form.colorVariants.map(c => (
+                        <span key={c} className="flex items-center gap-1.5 bg-cream-100 text-devotion-brown text-sm font-bold px-3 py-1 rounded-full">
+                          {c}
+                          <button onClick={() => setForm(f => ({ ...f, colorVariants: f.colorVariants.filter(v => v !== c) }))}
+                            className="text-red-400 hover:text-red-600"><X size={12} /></button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <p className="text-xs text-cream-500 mt-1.5">If added, customers must pick a colour before adding this product to cart.</p>
+                </div>
+
                 {/* Images */}
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-devotion-brown/70 mb-1.5 uppercase tracking-wider">Image URLs (Cloudinary)</label>
+                  <label className="block text-xs font-bold text-devotion-brown/70 mb-1.5 uppercase tracking-wider">Image URLs (Cloudinary) — first image is the main one</label>
                   {(form.images || ['']).map((img, i) => (
-                    <div key={i} className="flex gap-2 mb-2">
+                    <div key={i} className="flex gap-2 mb-2 items-center">
+                      {img ? (
+                        <img src={img} alt="" className="w-10 h-10 rounded-lg object-cover bg-cream-100 border border-cream-200 shrink-0" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg bg-cream-100 border border-dashed border-cream-300 shrink-0" />
+                      )}
                       <input type="url" value={img}
                         onChange={e => {
                           const imgs = [...(form.images || [''])]
@@ -182,6 +231,16 @@ export default function AdminProducts() {
                         }}
                         placeholder="https://res.cloudinary.com/..."
                         className="input-field text-sm flex-1" />
+                      <div className="flex flex-col gap-0.5">
+                        <button onClick={() => moveImage(i, -1)} disabled={i === 0}
+                          className="p-0.5 rounded bg-cream-100 text-devotion-brown hover:bg-saffron-100 disabled:opacity-30">
+                          <ChevronUp size={13} />
+                        </button>
+                        <button onClick={() => moveImage(i, 1)} disabled={i === (form.images?.length || 1) - 1}
+                          className="p-0.5 rounded bg-cream-100 text-devotion-brown hover:bg-saffron-100 disabled:opacity-30">
+                          <ChevronDown size={13} />
+                        </button>
+                      </div>
                       {i === (form.images?.length || 1) - 1 ? (
                         <button onClick={() => setForm(f => ({ ...f, images: [...(f.images || ['']), ''] }))}
                           className="px-3 py-2 bg-saffron-100 text-saffron-600 rounded-xl text-sm font-bold hover:bg-saffron-200">+</button>

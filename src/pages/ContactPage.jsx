@@ -48,7 +48,7 @@ export default function ContactPage() {
 
       {/* Hero */}
       <section className="bg-devotion-dark py-16 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #f97f0a 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #C9960A 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.p className="text-saffron-400 text-xs uppercase tracking-[4px] font-bold mb-4"
             initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
@@ -75,18 +75,18 @@ export default function ContactPage() {
             </motion.div>
 
             {[
-              { icon: Phone,     label: 'WhatsApp',   href: 'https://wa.me/message/XNZVRD2CYFWPG1',          color: 'bg-green-50 text-green-600 border-green-200' },
-              { icon: Mail,      label: 'Email Us',         value: 'radhebloom@gmail.com', href: 'mailto:radhebloom@gmail.com', color: 'bg-blue-50 text-blue-600 border-blue-200' },
-              { icon: MapPin,    label: 'Visit Us',         value: 'Kichha, Uttarakhand, India', href: '#',             color: 'bg-orange-50 text-orange-600 border-orange-200' },
-              { icon: Clock,     label: 'Business Hours',   value: 'Mon–Sat: 9am – 7pm', href: '#',                        color: 'bg-purple-50 text-purple-600 border-purple-200' },
+              { icon: Phone,     label: 'WhatsApp',   href: 'https://wa.me/message/XNZVRD2CYFWPG1' },
+              { icon: Mail,      label: 'Email Us',         value: 'radhebloom@gmail.com', href: 'mailto:radhebloom@gmail.com' },
+              { icon: MapPin,    label: 'Visit Us',         value: 'Kichha, Uttarakhand, India', href: '#' },
+              { icon: Clock,     label: 'Business Hours',   value: 'Mon–Sat: 9am – 7pm', href: '#' },
             ].map((item, i) => {
               const Icon = item.icon
               return (
                 <motion.a key={i} href={item.href}
                   initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i + 1}
                   whileHover={{ x: 4 }}
-                  className={`flex items-center gap-4 p-4 rounded-2xl border-2 ${item.color} transition-all block`}>
-                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
+                  className="flex items-center gap-4 p-4 rounded-2xl border border-saffron-300/30 bg-saffron-100/40 text-devotion-brown transition-all block">
+                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm text-saffron-500">
                     <Icon size={18} />
                   </div>
                   <div>
@@ -103,14 +103,14 @@ export default function ContactPage() {
               target="_blank" rel="noreferrer"
               initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={5}
               whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-              className="flex items-center justify-center gap-3 w-full bg-green-500 hover:bg-green-600 text-white font-bold px-6 py-4 rounded-2xl transition-colors text-base shadow-lg">
+              className="flex items-center justify-center gap-3 w-full bg-saffron-500 hover:bg-saffron-600 text-white font-bold px-6 py-4 rounded-2xl transition-colors text-base shadow-warm">
               <MessageCircle size={20} />
               Chat on WhatsApp
             </motion.a>
 
             {/* Quick response note */}
             <div className="bg-saffron-50 border border-saffron-200 rounded-2xl p-4 text-sm text-saffron-800">
-              <p className="font-bold mb-1">⚡ Fastest Response</p>
+              <p className="font-bold mb-1">✦ Fastest Response</p>
               <p>WhatsApp us for instant replies! We typically respond within 30 minutes during business hours.</p>
             </div>
           </div>
@@ -121,8 +121,8 @@ export default function ContactPage() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
                 className="bg-white rounded-3xl p-12 shadow-card text-center">
-                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <CheckCircle className="text-green-500" size={40} />
+                <div className="w-20 h-20 bg-saffron-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <CheckCircle className="text-saffron-500" size={40} />
                 </div>
                 <h3 className="font-display text-3xl text-devotion-brown mb-3">Message Sent! 🙏</h3>
                 <p className="text-cream-500 mb-2">Thank you for reaching out to Radhe Bloom.</p>
@@ -131,7 +131,7 @@ export default function ContactPage() {
                   <button onClick={() => { setSubmitted(false); setForm({ name:'', email:'', phone:'', subject:'', message:'' }) }}
                     className="btn-outline text-sm">Send Another Message</button>
                   <a href="https://wa.me/message/XNZVRD2CYFWPG1" target="_blank" rel="noreferrer"
-                    className="btn-primary text-sm">💬 WhatsApp Us</a>
+                    className="btn-primary text-sm">WhatsApp Us</a>
                 </div>
               </motion.div>
             ) : (

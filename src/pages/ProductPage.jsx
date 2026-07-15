@@ -1,20 +1,25 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import axios from 'axios'
-import { ShoppingBag, ArrowLeft, Star, Package, Ruler, Weight, Palette, ChevronLeft, ChevronRight } from 'lucide-react'
+import toast from 'react-hot-toast'
+import { ShoppingBag, ArrowLeft, Star, Package, Ruler, Weight, Palette, ChevronLeft, ChevronRight, Heart } from 'lucide-react'
 import { useCart } from '../context/CartContext'
+import { useWishlist } from '../context/WishlistContext'
 import SEO from '../components/ui/SEO'
 import ProductCard from '../components/ui/ProductCard-currency'
 import { useCurrency } from '../context/CurrencyContext'
+import { thumbUrl, detailUrl } from '../utils/image'
 
 export default function ProductPage() {
   const { id } = useParams()
   const { addToCart } = useCart()
+  const { toggleWishlist, isWishlisted } = useWishlist()
   const [product, setProduct] = useState(null)
   const [related, setRelated] = useState([])
   const [loading, setLoading] = useState(true)
   const [imgIdx, setImgIdx] = useState(0)
   const [qty, setQty] = useState(1)
+  const [selectedColor, setSelectedColor] = useState(null)
   const { formatPrice, currency } = useCurrency()
 
   useEffect(() => {
@@ -23,6 +28,7 @@ export default function ProductPage() {
     axios.get(`/api/products/${id}`)
       .then(r => {
         setProduct(r.data.product)
+        setSelectedColor(null)
         return axios.get(`/api/products?category=${r.data.product.category}&limit=4&exclude=${id}`)
       })
       .then(r => setRelated(r.data.products || []))
@@ -70,7 +76,7 @@ export default function ProductPage() {
         <div className="space-y-4">
           <div className="relative bg-cream-100 rounded-3xl overflow-hidden aspect-square">
             <img
-              src={images[imgIdx]}
+              src={detailUrl(images[imgIdx])}
               alt={product.name}
               className="w-full h-full object-cover"
             />
@@ -97,7 +103,7 @@ export default function ProductPage() {
               {images.map((img, i) => (
                 <button key={i} onClick={() => setImgIdx(i)}
                   className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${i === imgIdx ? 'border-saffron-400 shadow-warm' : 'border-cream-200 hover:border-saffron-200'}`}>
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <img src={thumbUrl(img, 200)} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
@@ -167,6 +173,27 @@ export default function ProductPage() {
             </p>
           )}
 
+          {/* Colour variants */}
+          {product.colorVariants?.length > 0 && (
+            <div className="mb-5">
+              <p className="text-xs font-bold text-devotion-brown/70 uppercase tracking-wider mb-2">
+                Colour{selectedColor ? <span className="text-saffron-600 normal-case"> — {selectedColor}</span> : ''}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {product.colorVariants.map(c => (
+                  <button key={c} onClick={() => setSelectedColor(c)}
+                    className={"px-4 py-1.5 rounded-full text-sm font-bold border-2 transition-all " + (
+                      selectedColor === c
+                        ? 'bg-saffron-500 border-saffron-500 text-white shadow-warm'
+                        : 'border-cream-200 text-devotion-brown hover:border-saffron-300'
+                    )}>
+                    {c}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Qty + Add to Cart */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 bg-cream-100 rounded-full px-4 py-2">
@@ -177,11 +204,27 @@ export default function ProductPage() {
                 className="w-7 h-7 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-saffron-50 transition-colors font-bold">+</button>
             </div>
             <button
-              onClick={() => addToCart(product, qty)}
+              onClick={() => {
+                if (product.colorVariants?.length > 0 && !selectedColor) {
+                  return toast.error('Please select a colour first')
+                }
+                addToCart(product, qty, selectedColor)
+              }}
               disabled={product.stock === 0}
               className="btn-primary flex-1 justify-center text-base disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ShoppingBag size={18} /> Add to Cart
+            </button>
+            <button
+              onClick={() => toggleWishlist(product)}
+              aria-label={isWishlisted(product._id) ? 'Remove from wishlist' : 'Add to wishlist'}
+              className={"w-11 h-11 shrink-0 rounded-full border-2 flex items-center justify-center transition-all " + (
+                isWishlisted(product._id)
+                  ? 'bg-red-50 border-red-200 text-red-500'
+                  : 'border-cream-200 text-devotion-brown hover:border-red-200 hover:text-red-500'
+              )}
+            >
+              <Heart size={19} className={isWishlisted(product._id) ? 'fill-current' : ''} />
             </button>
           </div>
         </div>

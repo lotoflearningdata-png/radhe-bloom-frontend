@@ -45,7 +45,7 @@ export default function AdminLayout() {
           <Link to="/" className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full border-2 border-cream-200/30 bg-cream-50 flex items-center justify-center overflow-hidden shadow-sm shrink-0">
               <img
-                src="https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png"
+                src="https://res.cloudinary.com/dayndbxgi/image/upload/v1783316490/WhatsApp_Image_2026-07-04_at_17.04.57_vgwfn3.jpg"
                 alt="Logo"
                 className="w-11 h-11 object-contain"
               />

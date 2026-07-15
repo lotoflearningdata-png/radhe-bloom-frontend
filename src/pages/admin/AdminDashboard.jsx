@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { ShoppingBag, Package, Users, TrendingUp, Clock, CheckCircle, Truck, AlertCircle } from 'lucide-react'
+import { ShoppingBag, Package, Users, TrendingUp, Clock, CheckCircle, Truck, AlertCircle, DollarSign } from 'lucide-react'
+import { useCurrency } from '../../context/CurrencyContext'
 
 export default function AdminDashboard() {
+  const { rate } = useCurrency()
   const [stats, setStats]   = useState(null)
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
@@ -48,6 +50,7 @@ export default function AdminDashboard() {
           { label: 'Revenue',        value: `₹${stats?.totalRevenue?.toFixed(0) || 0}`, icon: TrendingUp, color: 'bg-green-50 text-green-600' },
           { label: 'Products',       value: stats?.totalProducts,             icon: Package,      color: 'bg-saffron-50 text-saffron-600' },
           { label: 'Pending Orders', value: stats?.pendingOrders,             icon: Clock,        color: 'bg-yellow-50 text-yellow-600' },
+          { label: 'Live Rate (INR → USD)', value: rate ? `1₹ = $${rate.toFixed(4)}` : '...', icon: DollarSign, color: 'bg-purple-50 text-purple-600' },
         ].map((stat, i) => {
           const Icon = stat.icon
           return (

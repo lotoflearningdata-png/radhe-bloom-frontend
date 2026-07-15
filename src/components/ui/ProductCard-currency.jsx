@@ -2,22 +2,31 @@
 // Replace your existing ProductCard with this version
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ShoppingCart, Star } from 'lucide-react'
+import { ShoppingCart, Star, Heart } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useCart } from '../../context/CartContext'
+import { useWishlist } from '../../context/WishlistContext'
 import { useCurrency } from '../../context/CurrencyContext'
+import { thumbUrl } from '../../utils/image'
 import toast from 'react-hot-toast'
 
 export default function ProductCard({ product, index = 0 }) {
   const { addToCart }   = useCart()
   const { formatPrice } = useCurrency()
+  const { toggleWishlist, isWishlisted } = useWishlist()
   const [adding, setAdding] = useState(false)
+  const wished = isWishlisted(product._id)
 
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : null
 
   const handleAddToCart = async (e) => {
+    if (product.colorVariants?.length > 0) {
+      // let the card's Link navigate to the product page so a colour can be chosen
+      toast('Choose a colour on the product page', { icon: '🎨' })
+      return
+    }
     e.preventDefault()
     setAdding(true)
     try {
@@ -42,7 +51,7 @@ export default function ProductCard({ product, index = 0 }) {
         {/* Image */}
         <div className="relative aspect-square bg-cream-100 overflow-hidden">
           <img
-            src={product.images?.[0] || 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png'}
+            src={thumbUrl(product.images?.[0] || 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png')}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
@@ -52,12 +61,24 @@ export default function ProductCard({ product, index = 0 }) {
               {discount}% OFF
             </span>
           )}
-          {/* Badge */}
-          {product.badge && (
-            <span className="absolute top-2 right-2 bg-devotion-dark text-saffron-400 text-xs font-bold px-2 py-1 rounded-full">
-              {product.badge}
-            </span>
-          )}
+          {/* Wishlist + badge */}
+          <div className="absolute top-2 right-2 flex flex-col items-end gap-1.5">
+            <motion.button
+              onClick={(e) => { e.preventDefault(); toggleWishlist(product) }}
+              whileTap={{ scale: 0.85 }}
+              aria-label={wished ? 'Remove from wishlist' : 'Add to wishlist'}
+              className={"w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition-colors " + (
+                wished ? 'bg-red-500 text-white' : 'bg-white/90 text-devotion-brown hover:text-red-500'
+              )}
+            >
+              <Heart size={15} className={wished ? 'fill-current' : ''} />
+            </motion.button>
+            {product.badge && (
+              <span className="bg-devotion-dark text-saffron-400 text-xs font-bold px-2 py-1 rounded-full">
+                {product.badge}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Info */}

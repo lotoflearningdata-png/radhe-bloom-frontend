@@ -141,7 +141,7 @@ export default function AdminOrders() {
                   <div>
                     <p className="text-xs font-bold text-cream-500 uppercase mb-2">Items</p>
                     {order.items?.map((item, i) => (
-                      <p key={i} className="text-devotion-brown">{item.product?.name} ×{item.qty} — ₹{item.price * item.qty}</p>
+                      <p key={i} className="text-devotion-brown">{item.product?.name}{item.color ? ` (${item.color})` : ''} ×{item.qty} — ₹{item.price * item.qty}</p>
                     ))}
                   </div>
 

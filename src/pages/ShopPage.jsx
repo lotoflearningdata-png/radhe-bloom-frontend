@@ -86,7 +86,7 @@ export default function ShopPage() {
     <>
       <SEO
         title="Shop All Products"
-        description="Browse our complete collection of handcrafted Krishna idols, MDF cutouts, festive sets, home décor and kids toys from Radhe Bloom, Mathura."
+        description="Browse our complete collection of handcrafted Krishna idols, MDF cutouts, festive sets, home décor and kids toys from Radhe Bloom."
       />
     <div className="max-w-7xl mx-auto px-4 py-10">
       <div className="mb-8">

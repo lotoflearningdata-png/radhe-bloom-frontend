@@ -6,7 +6,7 @@ export default function CurrencyToggle() {
   const ctx = useContext(CurrencyContext)
   if (!ctx) return null
 
-  const { currency, toggleCurrency, rate } = ctx
+  const { currency, toggleCurrency } = ctx
   const isUSD = currency === 'USD'
 
   const handleToggle = (e) => {
@@ -57,13 +57,6 @@ export default function CurrencyToggle() {
       >
         $
       </span>
-
-      {/* Live rate */}
-      {rate && (
-        <span className="hidden lg:inline text-xs text-cream-400 bg-cream-100 px-2 py-0.5 rounded-full whitespace-nowrap">
-          1₹ = ${rate.toFixed(4)}
-        </span>
-      )}
     </div>
   )
 }

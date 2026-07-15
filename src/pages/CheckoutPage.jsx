@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { useCurrency } from '../context/CurrencyContext'
 import CouponInput from '../components/checkout/CouponInput'
+import { thumbUrl } from '../utils/image'
 import { Lock, ArrowRight, Globe, MapPin } from 'lucide-react'
 
 const INDIAN_STATES = [
@@ -21,7 +22,7 @@ export default function CheckoutPage() {
   const { user }    = useAuth()
   const { formatPrice, currency } = useCurrency()
   const navigate    = useNavigate()
-  const shipping    = cartTotal >= 499 ? 0 : 49
+  const shipping    = cartTotal >= 999 ? 0 : 49
   const total       = cartTotal + shipping
 
   const [isInternational, setIsInternational] = useState(false)
@@ -46,6 +47,18 @@ export default function CheckoutPage() {
     <div className="max-w-xl mx-auto px-4 py-32 text-center">
       <h2 className="font-display text-3xl text-devotion-brown mb-4">Your cart is empty</h2>
       <Link to="/shop" className="btn-primary">Go Shopping</Link>
+    </div>
+  )
+
+  // Unverified email accounts can browse but not place orders
+  if (user && user.authProvider === 'local' && !user.emailVerified) return (
+    <div className="max-w-xl mx-auto px-4 py-32 text-center">
+      <h2 className="font-display text-3xl text-devotion-brown mb-4">Verify your email to checkout</h2>
+      <p className="text-cream-500 mb-6">
+        We've sent a verification link to <strong>{user.email}</strong>.
+        Please click it to unlock checkout. Didn't get it? Use the resend link in the banner above.
+      </p>
+      <Link to="/shop" className="btn-primary">Continue Browsing</Link>
     </div>
   )
 
@@ -88,7 +101,6 @@ export default function CheckoutPage() {
         currency: 'INR',
         name: 'Radhe Bloom',
         description: 'Divine Creations',
-        image: 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png',
         order_id: data.orderId,
         prefill: { name: form.name, email: form.email, contact: form.phone },
         theme: { color: '#C9960A' },
@@ -99,7 +111,7 @@ export default function CheckoutPage() {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
               shippingAddress: { ...form, country: 'India' },
-              items: cart.map(i => ({ product: i.product._id, qty: i.qty, price: i.product.price })),
+              items: cart.map(i => ({ product: i.product._id, qty: i.qty, price: i.product.price, color: i.color })),
               total: finalTotal,
               couponCode: appliedCoupon?.code || null,
               discount: appliedCoupon?.discount || 0,
@@ -115,7 +127,12 @@ export default function CheckoutPage() {
         },
         modal: { ondismiss: () => { setLoading(false); toast('Payment cancelled') } },
       }
-      new window.Razorpay(options).open()
+      const rzp = new window.Razorpay(options)
+      rzp.on('payment.failed', (response) => {
+        setLoading(false)
+        toast.error(response.error?.description || 'Payment failed. Please try again.')
+      })
+      rzp.open()
     } catch (err) {
       toast.error(err.response?.data?.message || 'Order creation failed')
       setLoading(false)
@@ -129,7 +146,7 @@ export default function CheckoutPage() {
     try {
       const { data: order } = await axios.post('/api/orders/create-international', {
         shippingAddress: form,
-        items: cart.map(i => ({ product: i.product._id, qty: i.qty, price: i.product.price })),
+        items: cart.map(i => ({ product: i.product._id, qty: i.qty, price: i.product.price, color: i.color })),
         total: finalTotal,
         couponCode: appliedCoupon?.code || null,
         discount: appliedCoupon?.discount || 0,
@@ -257,12 +274,12 @@ export default function CheckoutPage() {
 
             <div className="space-y-3 mb-5 max-h-56 overflow-y-auto">
               {cart.map(item => (
-                <div key={item.product._id} className="flex gap-3 items-center">
-                  <img src={item.product.images?.[0] || 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png'}
+                <div key={item.product._id + (item.color || '')} className="flex gap-3 items-center">
+                  <img src={thumbUrl(item.product.images?.[0] || 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png', 200)}
                     alt="" className="w-12 h-12 rounded-lg object-cover bg-cream-100" />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-bold text-devotion-brown line-clamp-1">{item.product.name}</p>
-                    <p className="text-xs text-cream-500">×{item.qty}</p>
+                    <p className="text-xs text-cream-500">{item.color ? `${item.color} · ` : ''}×{item.qty}</p>
                   </div>
                   <span className="text-sm font-bold text-devotion-brown">{formatPrice(item.product.price * item.qty)}</span>
                 </div>

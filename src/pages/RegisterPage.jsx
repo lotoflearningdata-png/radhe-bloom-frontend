@@ -23,7 +23,7 @@ export default function RegisterPage() {
     setLoading(true)
     try {
       await register(form.name, form.email, form.password)
-      toast.success('Account created! Welcome to Radhe Bloom 🌸')
+      toast.success('Account created! Check your inbox to verify your email 🌸', { duration: 6000 })
       navigate('/')
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed')

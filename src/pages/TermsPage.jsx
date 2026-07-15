@@ -31,14 +31,14 @@ export default function TermsPage() {
 
         <Section title="1. About Us">
           <p>
-            Radhe Bloom is a handcrafted devotional products business based in Mathura, Uttar Pradesh, India.
+            Radhe Bloom is a handcrafted devotional products business based in Kichha, Uttarakhand, India.
             We sell Krishna idols, MDF cutouts, festive sets, home décor, candles, toys and gift sets —
             all handcrafted by skilled artisans.
           </p>
           <div className="bg-cream-50 rounded-xl p-4 mt-3 text-sm">
             <p><strong>Business Name:</strong> Radhe Bloom</p>
-            <p><strong>Location:</strong> Mathura, Uttar Pradesh, India</p>
-            <p><strong>Contact:</strong> hello@radhebloom.in | +91-9528078217</p>
+            <p><strong>Location:</strong> Kichha, Uttarakhand, India</p>
+            <p><strong>Contact:</strong> radhebloom@gmail.com | +91-9528078217</p>
           </div>
         </Section>
 
@@ -68,7 +68,7 @@ export default function TermsPage() {
             <li>We accept payments via Razorpay (UPI, Cards, Net Banking, Wallets) for Indian customers and Payoneer for international customers.</li>
             <li>Payment must be completed before order processing begins.</li>
             <li>Prices may change without prior notice. The price at the time of order placement is final.</li>
-            <li>Free shipping applies on orders above ₹499 within India. International shipping is charged separately.</li>
+            <li>Free shipping applies on orders above ₹999 within India. International shipping is charged separately.</li>
           </ul>
         </Section>
 
@@ -100,7 +100,7 @@ export default function TermsPage() {
             complete details. Key points:
           </p>
           <ul className="list-disc pl-6 mt-3 space-y-2">
-            <li>Returns accepted within 7 days of delivery for damaged or defective items only.</li>
+            <li>Returns accepted within 24–48 hours of delivery for damaged or defective items only.</li>
             <li>Natural variations in handcrafted products are not eligible for return.</li>
             <li>Refunds are processed within 5-7 business days to the original payment method.</li>
           </ul>
@@ -142,7 +142,7 @@ export default function TermsPage() {
         <Section title="11. Governing Law & Disputes">
           <p>
             These Terms are governed by the laws of India. Any disputes shall be subject to the exclusive
-            jurisdiction of the courts in Mathura, Uttar Pradesh, India. We encourage customers to
+            jurisdiction of the courts in Kichha, Uttarakhand, India. We encourage customers to
             first contact our Grievance Officer to resolve any issues amicably before pursuing legal action.
           </p>
         </Section>
@@ -168,9 +168,9 @@ export default function TermsPage() {
           <div className="bg-white rounded-xl p-4 space-y-2 text-sm">
             <p><strong>Grievance Officer:</strong> Radhe Bloom Management</p>
             <p><strong>Designation:</strong> Proprietor / Customer Relations Head</p>
-            <p><strong>Email:</strong> <a href="mailto:hello@radhebloom.in" className="text-saffron-600 hover:underline">hello@radhebloom.in</a></p>
+            <p><strong>Email:</strong> <a href="mailto:radhebloom@gmail.com" className="text-saffron-600 hover:underline">radhebloom@gmail.com</a></p>
             <p><strong>Phone:</strong> <a href="tel:+919528078217" className="text-saffron-600 hover:underline">+91-9528078217</a></p>
-            <p><strong>Address:</strong> Mathura, Uttar Pradesh, India</p>
+            <p><strong>Address:</strong> Kichha, Uttarakhand, India</p>
             <p><strong>Working Hours:</strong> Monday to Saturday, 9:00 AM – 7:00 PM IST</p>
             <p><strong>Response Time:</strong> We will acknowledge your complaint within 48 hours and resolve it within 30 days.</p>
           </div>

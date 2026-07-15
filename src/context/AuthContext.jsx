@@ -62,9 +62,23 @@ export function AuthProvider({ children }) {
     return data.user
   }
 
+  // Resend email verification link
+  const resendVerification = async () => {
+    const { data } = await axios.post('/api/auth/resend-verification')
+    return data
+  }
+
+  // Re-fetch current user (e.g. after email verification)
+  const refreshUser = async () => {
+    const { data } = await axios.get('/api/auth/me')
+    setUser(data.user)
+    return data.user
+  }
+
   return (
     <AuthContext.Provider value={{
       user, loading, login, register, logout, setUserFromGoogle, updatePhone, setUser,
+      resendVerification, refreshUser,
     }}>
       {children}
     </AuthContext.Provider>

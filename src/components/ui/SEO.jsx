@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async'
 
 const DEFAULT = {
   title:       'Radhe Bloom – Divine Creations & Sacred Gifts',
-  description: 'Handcrafted Krishna idols, MDF cutouts, devotional gifts & toys from Mathura. Serving retail & wholesale with love. Free shipping above ₹499.',
+  description: 'Handcrafted Krishna idols, MDF cutouts, devotional gifts & toys. Serving retail & wholesale with love. Free shipping above ₹999.',
   image:       'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png',
   url:         'https://radhebloom.in',
 }
@@ -18,7 +18,7 @@ export default function SEO({ title, description, image, url, type = 'website', 
       {/* Basic */}
       <title>{fullTitle}</title>
       <meta name="description" content={fullDesc} />
-      <meta name="keywords" content="radhe bloom, krishna idol, radha krishna, MDF cutout, devotional gifts, mathura, janmashtami, navratri, hindu idol, handcrafted, wholesale" />
+      <meta name="keywords" content="radhe bloom, krishna idol, radha krishna, MDF cutout, devotional gifts, janmashtami, navratri, hindu idol, handcrafted, wholesale" />
       <meta name="author" content="Radhe Bloom" />
       <link rel="canonical" href={fullUrl} />
 
@@ -74,8 +74,8 @@ export default function SEO({ title, description, image, url, type = 'website', 
           description: DEFAULT.description,
           address: {
             '@type':          'PostalAddress',
-            addressLocality:  'Mathura',
-            addressRegion:    'Uttar Pradesh',
+            addressLocality:  'Kichha',
+            addressRegion:    'Uttarakhand',
             addressCountry:   'IN',
           },
           contactPoint: {
