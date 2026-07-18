@@ -64,7 +64,7 @@ export default function Navbar() {
   return (
     <>
       <div className="bg-saffron-500 text-white text-center text-xs py-2 px-4 tracking-wide">
-        🌸 Free shipping on orders above ₹999 &nbsp;|&nbsp; Retail & Wholesale Welcome &nbsp;
+        Free shipping on orders above ₹999 &nbsp;|&nbsp; Retail & Wholesale Welcome &nbsp;
       </div>
 
       <nav className={"sticky top-0 z-50 transition-all duration-300 " + (scrolled ? 'bg-white shadow-warm py-1' : 'bg-cream-50 py-2')}>

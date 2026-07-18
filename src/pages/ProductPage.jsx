@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import axios from 'axios'
 import toast from 'react-hot-toast'
-import { ShoppingBag, ArrowLeft, Star, Package, Ruler, Weight, Palette, ChevronLeft, ChevronRight, Heart } from 'lucide-react'
+import { ShoppingBag, ArrowLeft, Star, Package, Ruler, Weight, Palette, ChevronLeft, ChevronRight, Heart, ZoomIn, X } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
 import SEO from '../components/ui/SEO'
@@ -20,7 +20,22 @@ export default function ProductPage() {
   const [imgIdx, setImgIdx] = useState(0)
   const [qty, setQty] = useState(1)
   const [selectedColor, setSelectedColor] = useState(null)
+  const [zoom, setZoom] = useState({ active: false, x: 50, y: 50 })
+  const [lightbox, setLightbox] = useState({ open: false, zoomed: false, x: 50, y: 50 })
   const { formatPrice, currency } = useCurrency()
+
+  useEffect(() => {
+    if (!lightbox.open) return
+    const onKey = e => {
+      if (e.key === 'Escape') setLightbox(l => ({ ...l, open: false, zoomed: false }))
+    }
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [lightbox.open])
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -74,12 +89,28 @@ export default function ProductPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
         {/* Images */}
         <div className="space-y-4">
-          <div className="relative bg-cream-100 rounded-3xl overflow-hidden aspect-square">
+          <div
+            className="relative bg-cream-100 rounded-3xl overflow-hidden aspect-square cursor-zoom-in"
+            onClick={() => setLightbox({ open: true, zoomed: false, x: 50, y: 50 })}
+            onMouseMove={e => {
+              const rect = e.currentTarget.getBoundingClientRect()
+              setZoom({
+                active: true,
+                x: ((e.clientX - rect.left) / rect.width) * 100,
+                y: ((e.clientY - rect.top) / rect.height) * 100,
+              })
+            }}
+            onMouseLeave={() => setZoom(z => ({ ...z, active: false }))}
+          >
             <img
               src={detailUrl(images[imgIdx])}
               alt={product.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-200"
+              style={zoom.active ? { transform: 'scale(2)', transformOrigin: `${zoom.x}% ${zoom.y}%` } : undefined}
             />
+            <span className="absolute bottom-4 right-4 w-9 h-9 bg-white/80 rounded-full flex items-center justify-center shadow pointer-events-none">
+              <ZoomIn size={18} className="text-devotion-brown" />
+            </span>
             {discount && (
               <span className="absolute top-4 left-4 bg-saffron-500 text-white text-sm font-bold px-3 py-1 rounded-full">
                 {discount}% OFF
@@ -87,11 +118,11 @@ export default function ProductPage() {
             )}
             {images.length > 1 && (
               <>
-                <button onClick={() => setImgIdx(i => (i - 1 + images.length) % images.length)}
+                <button onClick={e => { e.stopPropagation(); setImgIdx(i => (i - 1 + images.length) % images.length) }}
                   className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 rounded-full flex items-center justify-center shadow hover:bg-white transition-colors">
                   <ChevronLeft size={18} />
                 </button>
-                <button onClick={() => setImgIdx(i => (i + 1) % images.length)}
+                <button onClick={e => { e.stopPropagation(); setImgIdx(i => (i + 1) % images.length) }}
                   className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 rounded-full flex items-center justify-center shadow hover:bg-white transition-colors">
                   <ChevronRight size={18} />
                 </button>
@@ -243,6 +274,55 @@ export default function ProductPage() {
             {related.map(p => <ProductCard key={p._id} product={p} />)}
           </div>
         </section>
+      )}
+
+      {/* Image Lightbox */}
+      {lightbox.open && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+          onClick={() => setLightbox(l => ({ ...l, open: false, zoomed: false }))}
+        >
+          <button
+            aria-label="Close"
+            onClick={() => setLightbox(l => ({ ...l, open: false, zoomed: false }))}
+            className="absolute top-4 right-4 z-10 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors">
+            <X size={20} />
+          </button>
+          {images.length > 1 && (
+            <>
+              <button onClick={e => { e.stopPropagation(); setImgIdx(i => (i - 1 + images.length) % images.length) }}
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors">
+                <ChevronLeft size={20} />
+              </button>
+              <button onClick={e => { e.stopPropagation(); setImgIdx(i => (i + 1) % images.length) }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors">
+                <ChevronRight size={20} />
+              </button>
+            </>
+          )}
+          <div className="overflow-hidden max-w-[92vw] max-h-[88vh]" onClick={e => e.stopPropagation()}>
+            <img
+              src={detailUrl(images[imgIdx], 1600)}
+              alt={product.name}
+              onClick={e => {
+                const rect = e.currentTarget.getBoundingClientRect()
+                setLightbox(l => ({
+                  ...l,
+                  zoomed: !l.zoomed,
+                  x: ((e.clientX - rect.left) / rect.width) * 100,
+                  y: ((e.clientY - rect.top) / rect.height) * 100,
+                }))
+              }}
+              className={`max-w-[92vw] max-h-[88vh] object-contain transition-transform duration-200 ${lightbox.zoomed ? 'scale-[2.5] cursor-zoom-out' : 'cursor-zoom-in'}`}
+              style={lightbox.zoomed ? { transformOrigin: `${lightbox.x}% ${lightbox.y}%` } : undefined}
+            />
+          </div>
+          {images.length > 1 && (
+            <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm">
+              {imgIdx + 1} / {images.length}
+            </span>
+          )}
+        </div>
       )}
     </div>
   )

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
-import { Plus, Edit, Trash2, X, Search, ChevronUp, ChevronDown } from 'lucide-react'
+import { Plus, Edit, Trash2, X, Search, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react'
 
 const CATEGORIES = ['divine-idols','festive-sets','home-decor','kids-toys','candles','gift-sets','summer','rangoli']
-const EMPTY = { name:'', description:'', price:'', originalPrice:'', category:'divine-idols', colour:'', material:'', dimensions:'', weight:'', stock:50, featured:false, images:[''], colorVariants:[] }
+const EMPTY = { name:'', description:'', price:'', originalPrice:'', category:'divine-idols', colour:'', material:'', dimensions:'', weight:'', stock:50, featured:false, hidden:false, hsnCode:'', gstRate:18, images:[''], colorVariants:[] }
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([])
@@ -21,7 +21,7 @@ export default function AdminProducts() {
   const fetchProducts = async () => {
     setLoading(true)
     try {
-      const { data } = await axios.get('/api/products?limit=100')
+      const { data } = await axios.get('/api/products?limit=100&includeHidden=true')
       setProducts(data.products || [])
     } finally { setLoading(false) }
   }
@@ -53,7 +53,7 @@ export default function AdminProducts() {
     if (!form.name || !form.price || !form.category) return toast.error('Name, price and category are required')
     setSaving(true)
     try {
-      const payload = { ...form, price: Number(form.price), originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined, stock: Number(form.stock), images: form.images.filter(Boolean) }
+      const payload = { ...form, price: Number(form.price), originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined, stock: Number(form.stock), gstRate: form.gstRate === '' ? 18 : Number(form.gstRate), images: form.images.filter(Boolean) }
       if (modal === 'add') {
         const { data } = await axios.post('/api/products', payload)
         setProducts(prev => [data.product, ...prev])
@@ -66,6 +66,14 @@ export default function AdminProducts() {
       setModal(null)
     } catch (err) { toast.error(err.response?.data?.message || 'Failed to save') }
     finally { setSaving(false) }
+  }
+
+  const toggleHidden = async (p) => {
+    try {
+      const { data } = await axios.put(`/api/products/${p._id}`, { hidden: !p.hidden })
+      setProducts(prev => prev.map(x => x._id === p._id ? data.product : x))
+      toast.success(data.product.hidden ? 'Product hidden from store' : 'Product visible in store')
+    } catch { toast.error('Failed to update visibility') }
   }
 
   const handleDelete = async (id) => {
@@ -108,10 +116,14 @@ export default function AdminProducts() {
             <div key={p._id} className="bg-white rounded-2xl shadow-card overflow-hidden group">
               <div className="aspect-square bg-cream-100 relative overflow-hidden">
                 <img src={p.images?.[0] || 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png'}
-                  alt={p.name} className="w-full h-full object-cover" />
+                  alt={p.name} className={`w-full h-full object-cover ${p.hidden ? 'opacity-40 grayscale' : ''}`} />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
                   <button onClick={() => openEdit(p)} className="w-9 h-9 bg-white rounded-full flex items-center justify-center hover:bg-saffron-50 transition-colors">
                     <Edit size={14} className="text-saffron-600" />
+                  </button>
+                  <button onClick={() => toggleHidden(p)} title={p.hidden ? 'Show in store' : 'Hide from store'}
+                    className="w-9 h-9 bg-white rounded-full flex items-center justify-center hover:bg-cream-100 transition-colors">
+                    {p.hidden ? <Eye size={14} className="text-green-600" /> : <EyeOff size={14} className="text-devotion-brown" />}
                   </button>
                   <button onClick={() => handleDelete(p._id)} disabled={deleting === p._id}
                     className="w-9 h-9 bg-white rounded-full flex items-center justify-center hover:bg-red-50 transition-colors">
@@ -119,6 +131,7 @@ export default function AdminProducts() {
                   </button>
                 </div>
                 {p.featured && <span className="absolute top-2 left-2 bg-saffron-500 text-white text-xs px-2 py-0.5 rounded-full">Featured</span>}
+                {p.hidden && <span className="absolute top-2 right-2 bg-gray-800/90 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1"><EyeOff size={10} /> Hidden</span>}
               </div>
               <div className="p-3">
                 <p className="text-xs text-saffron-500 uppercase mb-1">{p.category}</p>
@@ -154,6 +167,8 @@ export default function AdminProducts() {
                   { key: 'material',     label: 'Material',       type: 'text' },
                   { key: 'dimensions',   label: 'Dimensions',     type: 'text' },
                   { key: 'weight',       label: 'Weight',         type: 'text' },
+                  { key: 'hsnCode',      label: 'HSN Code',       type: 'text' },
+                  { key: 'gstRate',      label: 'GST Rate (%)',   type: 'number' },
                 ].map(field => (
                   <div key={field.key} className={field.span === 2 ? 'sm:col-span-2' : ''}>
                     <label className="block text-xs font-bold text-devotion-brown/70 mb-1.5 uppercase tracking-wider">{field.label}</label>
@@ -171,12 +186,20 @@ export default function AdminProducts() {
                   </select>
                 </div>
 
-                {/* Featured */}
-                <div className="flex items-center gap-3 mt-5">
-                  <input type="checkbox" id="featured" checked={form.featured}
-                    onChange={e => setForm(f => ({ ...f, featured: e.target.checked }))}
-                    className="w-4 h-4 accent-saffron-500" />
-                  <label htmlFor="featured" className="text-sm font-bold text-devotion-brown">Featured Product</label>
+                {/* Featured + Hidden */}
+                <div className="mt-5 space-y-2">
+                  <div className="flex items-center gap-3">
+                    <input type="checkbox" id="featured" checked={form.featured}
+                      onChange={e => setForm(f => ({ ...f, featured: e.target.checked }))}
+                      className="w-4 h-4 accent-saffron-500" />
+                    <label htmlFor="featured" className="text-sm font-bold text-devotion-brown">Featured Product</label>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <input type="checkbox" id="hidden" checked={form.hidden || false}
+                      onChange={e => setForm(f => ({ ...f, hidden: e.target.checked }))}
+                      className="w-4 h-4 accent-saffron-500" />
+                    <label htmlFor="hidden" className="text-sm font-bold text-devotion-brown">Hidden from store</label>
+                  </div>
                 </div>
 
                 {/* Description */}

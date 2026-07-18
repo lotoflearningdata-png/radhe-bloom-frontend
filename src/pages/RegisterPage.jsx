@@ -23,7 +23,7 @@ export default function RegisterPage() {
     setLoading(true)
     try {
       await register(form.name, form.email, form.password)
-      toast.success('Account created! Check your inbox to verify your email 🌸', { duration: 6000 })
+      toast.success('Account created! Check your inbox to verify your email', { duration: 6000 })
       navigate('/')
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed')
@@ -38,7 +38,7 @@ export default function RegisterPage() {
     try {
       const { data } = await axios.post('/api/auth/google', { credential: response.credential })
       setUserFromGoogle(data.token, data.user)
-      toast.success(`Welcome, ${data.user.name}! 🌸`)
+      toast.success(`Welcome, ${data.user.name}!`)
       navigate('/')
     } catch (err) {
       toast.error(err.response?.data?.message || 'Google sign-in failed')
@@ -138,7 +138,7 @@ export default function RegisterPage() {
               type="submit" disabled={loading}
               className="btn-primary w-full justify-center text-base mt-2 disabled:opacity-60"
             >
-              {loading ? 'Creating account...' : 'Create Account 🌸'}
+              {loading ? 'Creating account...' : 'Create Account'}
             </button>
 
             {/* Click-wrap */}

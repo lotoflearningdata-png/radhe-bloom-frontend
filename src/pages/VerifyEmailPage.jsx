@@ -54,7 +54,7 @@ export default function VerifyEmailPage() {
           {status === 'success' && (
             <>
               <CheckCircle size={48} className="mx-auto text-green-500 mb-4" />
-              <h1 className="font-display text-2xl text-devotion-brown mb-2">Email Verified! 🌸</h1>
+              <h1 className="font-display text-2xl text-devotion-brown mb-2">Email Verified!</h1>
               <p className="text-cream-500 text-sm mb-6">{message}</p>
               <Link to="/shop" className="btn-primary inline-flex justify-center">
                 Start Shopping

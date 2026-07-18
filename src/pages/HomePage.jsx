@@ -210,7 +210,6 @@ export default function HomePage() {
             </div>
           ) : list.length === 0 ? (
             <div className="text-center py-16">
-              <p className="text-5xl mb-4">🌸</p>
               <p className="text-devotion-brown font-display text-xl">No products found</p>
             </div>
           ) : (
