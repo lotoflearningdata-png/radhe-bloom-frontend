@@ -5,6 +5,7 @@ import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
+import useCategories from '../../hooks/useCategories'
 
 const FEATURED_CATEGORIES = [
   {
@@ -37,19 +38,10 @@ const FEATURED_CATEGORIES = [
   },
 ]
 
-// All categories for pills row
-const ALL_CATEGORIES = [
-  { label: 'Divine Idols',        slug: 'divine-idols' },
-  { label: 'Festive Sets',        slug: 'festive-sets' },
-  { label: 'Home Décor',          slug: 'home-decor' },
-  { label: 'Gift Sets',           slug: 'gift-sets' },
-  { label: 'Candles & Fragrance', slug: 'candles' },
-  { label: 'Kids & Toys',         slug: 'kids-toys' },
-  { label: 'Rangoli & Decor',     slug: 'rangoli' },
-]
-
 export default function CategorySection() {
   const scrollRef = useRef(null)
+  // All categories for pills row
+  const ALL_CATEGORIES = useCategories().map(c => ({ label: c.name, slug: c.slug }))
 
   const scroll = (dir) => {
     if (scrollRef.current) {

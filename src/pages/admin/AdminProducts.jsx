@@ -3,8 +3,7 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 import { Plus, Edit, Trash2, X, Search, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react'
 
-const CATEGORIES = ['divine-idols','festive-sets','home-decor','kids-toys','candles','gift-sets','summer','rangoli']
-const EMPTY = { name:'', description:'', price:'', originalPrice:'', category:'divine-idols', colour:'', material:'', dimensions:'', weight:'', stock:50, featured:false, hidden:false, hsnCode:'', gstRate:18, images:[''], colorVariants:[] }
+const EMPTY = { name:'', description:'', price:'', originalPrice:'', category:'divine-idols', category2:'', colour:'', material:'', dimensions:'', weight:'', stock:50, featured:false, hidden:false, hsnCode:'', gstRate:18, images:[''], colorVariants:[] }
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([])
@@ -15,20 +14,30 @@ export default function AdminProducts() {
   const [search, setSearch]     = useState('')
   const [deleting, setDeleting] = useState(null)
   const [variantInput, setVariantInput] = useState('')
+  const [cats, setCats] = useState([])
 
   useEffect(() => { fetchProducts() }, [])
 
   const fetchProducts = async () => {
     setLoading(true)
     try {
-      const { data } = await axios.get('/api/products?limit=100&includeHidden=true')
-      setProducts(data.products || [])
+      const [prodRes, catRes] = await Promise.all([
+        axios.get('/api/products?limit=100&includeHidden=true'),
+        axios.get('/api/categories?includeHidden=true'),
+      ])
+      setProducts(prodRes.data.products || [])
+      setCats(catRes.data.categories || [])
     } finally { setLoading(false) }
   }
 
   const openAdd  = () => { setForm(EMPTY); setVariantInput(''); setModal('add') }
   const openEdit = (p) => {
-    setForm({ ...p, images: p.images?.length ? p.images : [''], colorVariants: p.colorVariants || [] })
+    setForm({
+      ...p,
+      images: p.images?.length ? p.images : [''],
+      colorVariants: p.colorVariants || [],
+      category2: (p.categories || []).find(c => c !== p.category) || '',
+    })
     setVariantInput('')
     setModal('edit')
   }
@@ -53,7 +62,7 @@ export default function AdminProducts() {
     if (!form.name || !form.price || !form.category) return toast.error('Name, price and category are required')
     setSaving(true)
     try {
-      const payload = { ...form, price: Number(form.price), originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined, stock: Number(form.stock), gstRate: form.gstRate === '' ? 18 : Number(form.gstRate), images: form.images.filter(Boolean) }
+      const payload = { ...form, price: Number(form.price), originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined, stock: Number(form.stock), gstRate: form.gstRate === '' ? 18 : Number(form.gstRate), images: form.images.filter(Boolean), categories: form.category2 && form.category2 !== form.category ? [form.category2] : [] }
       if (modal === 'add') {
         const { data } = await axios.post('/api/products', payload)
         setProducts(prev => [data.product, ...prev])
@@ -182,7 +191,16 @@ export default function AdminProducts() {
                 <div>
                   <label className="block text-xs font-bold text-devotion-brown/70 mb-1.5 uppercase tracking-wider">Category *</label>
                   <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} className="input-field">
-                    {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    {cats.map(c => <option key={c.slug} value={c.slug}>{c.name}</option>)}
+                  </select>
+                </div>
+
+                {/* Second Category */}
+                <div>
+                  <label className="block text-xs font-bold text-devotion-brown/70 mb-1.5 uppercase tracking-wider">Second Category (optional)</label>
+                  <select value={form.category2 || ''} onChange={e => setForm(f => ({ ...f, category2: e.target.value }))} className="input-field">
+                    <option value="">None</option>
+                    {cats.filter(c => c.slug !== form.category).map(c => <option key={c.slug} value={c.slug}>{c.name}</option>)}
                   </select>
                 </div>
 

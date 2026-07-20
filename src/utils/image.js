@@ -4,9 +4,10 @@ const transform = (url, t) => {
   return url.replace('/upload/', `/upload/${t}/`)
 }
 
-// Square thumbnail, smart-cropped around the main subject (for grids & small thumbs)
+// Square thumbnail, center-cropped (products are centered in the frame; g_auto
+// sometimes mis-crops toward the watermark logo)
 export const thumbUrl = (url, size = 600) =>
-  transform(url, `w_${size},h_${size},c_fill,g_auto,f_auto,q_auto`)
+  transform(url, `w_${size},h_${size},c_fill,g_center,f_auto,q_auto`)
 
 // Full image fitted into a square, padded with a color sampled from the image itself
 export const detailUrl = (url, size = 1000) =>

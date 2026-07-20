@@ -64,7 +64,7 @@ export default function ShippingPage() {
               <tbody>
                 <tr>
                   <td className="p-3 border border-cream-200">Below ₹999</td>
-                  <td className="p-3 border border-cream-200 text-devotion-brown font-bold">₹49</td>
+                  <td className="p-3 border border-cream-200 text-devotion-brown font-bold">₹69</td>
                   <td className="p-3 border border-cream-200">3–7 business days</td>
                 </tr>
                 <tr className="bg-green-50">
@@ -154,7 +154,7 @@ export default function ShippingPage() {
           <ul className="list-disc pl-6 space-y-2">
             <li>Approved refunds are processed within <strong>5–7 business days</strong> after we receive and inspect the returned product.</li>
             <li>Refunds are made to the <strong>original payment method</strong> (Razorpay → original card/UPI/wallet).</li>
-            <li>Shipping charges (₹49) are non-refundable unless the return is due to our error.</li>
+            <li>Shipping charges (₹69) are non-refundable unless the return is due to our error.</li>
             <li>For Razorpay payments, the refund reflects in 3–5 additional working days depending on your bank.</li>
           </ul>
         </Section>

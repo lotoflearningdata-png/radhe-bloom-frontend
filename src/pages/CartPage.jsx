@@ -59,7 +59,7 @@ export default function CartPage() {
           <div className="space-y-3 mb-5 text-sm">
             <div className="flex justify-between text-devotion-brown/70"><span>Subtotal</span><span>{formatPrice(cartTotal)}</span></div>
             <div className="flex justify-between text-devotion-brown/70">
-              <span>Shipping</span><span className="text-green-600 font-bold">{cartTotal >= 999 ? 'FREE' : '₹49'}</span>
+              <span>Shipping</span><span className="text-green-600 font-bold">{cartTotal >= 999 ? 'FREE' : '₹69'}</span>
             </div>
             {cartTotal < 999 && (
               <p className="text-xs text-saffron-500 bg-saffron-50 rounded-xl p-2 text-center">
@@ -69,7 +69,7 @@ export default function CartPage() {
             <hr className="border-cream-200" />
             <div className="flex justify-between font-bold text-base text-devotion-brown">
               <span>Total</span>
-              <span className="font-display text-xl">{formatPrice(cartTotal + (cartTotal >= 999 ? 0 : 49))}</span>
+              <span className="font-display text-xl">{formatPrice(cartTotal + (cartTotal >= 999 ? 0 : 69))}</span>
             </div>
           </div>
           <Link to="/checkout" className="btn-primary w-full justify-center text-base">Checkout <ArrowRight size={16} /></Link>

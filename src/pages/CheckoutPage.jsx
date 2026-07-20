@@ -22,7 +22,7 @@ export default function CheckoutPage() {
   const { user }    = useAuth()
   const { formatPrice, currency } = useCurrency()
   const navigate    = useNavigate()
-  const shipping    = cartTotal >= 999 ? 0 : 49
+  const shipping    = cartTotal >= 999 ? 0 : 69
   const total       = cartTotal + shipping
 
   const [isInternational, setIsInternational] = useState(false)

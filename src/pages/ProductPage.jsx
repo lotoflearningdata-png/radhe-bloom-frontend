@@ -20,7 +20,6 @@ export default function ProductPage() {
   const [imgIdx, setImgIdx] = useState(0)
   const [qty, setQty] = useState(1)
   const [selectedColor, setSelectedColor] = useState(null)
-  const [zoom, setZoom] = useState({ active: false, x: 50, y: 50 })
   const [lightbox, setLightbox] = useState({ open: false, zoomed: false, x: 50, y: 50 })
   const { formatPrice, currency } = useCurrency()
 
@@ -92,21 +91,11 @@ export default function ProductPage() {
           <div
             className="relative bg-cream-100 rounded-3xl overflow-hidden aspect-square cursor-zoom-in"
             onClick={() => setLightbox({ open: true, zoomed: false, x: 50, y: 50 })}
-            onMouseMove={e => {
-              const rect = e.currentTarget.getBoundingClientRect()
-              setZoom({
-                active: true,
-                x: ((e.clientX - rect.left) / rect.width) * 100,
-                y: ((e.clientY - rect.top) / rect.height) * 100,
-              })
-            }}
-            onMouseLeave={() => setZoom(z => ({ ...z, active: false }))}
           >
             <img
               src={detailUrl(images[imgIdx])}
               alt={product.name}
-              className="w-full h-full object-cover transition-transform duration-200"
-              style={zoom.active ? { transform: 'scale(2)', transformOrigin: `${zoom.x}% ${zoom.y}%` } : undefined}
+              className="w-full h-full object-cover"
             />
             <span className="absolute bottom-4 right-4 w-9 h-9 bg-white/80 rounded-full flex items-center justify-center shadow pointer-events-none">
               <ZoomIn size={18} className="text-devotion-brown" />

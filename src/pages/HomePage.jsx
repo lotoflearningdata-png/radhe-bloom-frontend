@@ -20,7 +20,7 @@ const SLIDES = [
 ]
 
 const FESTIVALS = [
-  { name: 'Janmashtami', icon: '🎉', desc: 'Makhan Chor sets, Dahi Handi décor, Bal Krishna idols & Ashta Sakhi figurines.', from: 'from-yellow-900', to: 'to-devotion-dark', accent: 'text-yellow-300', badge: 'Most Popular', slug: 'festive-sets' },
+  { name: 'Janmashtami', icon: '🎉', desc: 'Makhan Chor sets, Dahi Handi décor, Bal Krishna idols & Ashta Sakhi figurines.', from: 'from-yellow-900', to: 'to-devotion-dark', accent: 'text-yellow-300', badge: 'Most Popular', slug: 'janmashtami' },
   { name: 'Navratri',    icon: '🌺', desc: 'Nav Durga sets, colourful décor & festive accessories for nine divine nights.',   from: 'from-red-900',    to: 'to-devotion-dark', accent: 'text-red-300',    badge: 'New Collection',slug: 'festive-sets' },
   { name: 'Diwali',      icon: '🪔', desc: 'Ganesh-Laxmi idols, scented candles, rangoli mats & premium gift hampers.',       from: 'from-orange-900', to: 'to-devotion-dark', accent: 'text-orange-300', badge: 'Best Gifting',  slug: 'gift-sets' },
 ]
@@ -261,7 +261,7 @@ export default function HomePage() {
               <h3 className="font-display text-lg font-semibold text-[#3D2B1F] mb-1">Most Loved Collection</h3>
               
               <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="w-full">
-                <Link to="/shop/festive-sets" 
+                <Link to="/shop/janmashtami"
                   className="w-full justify-center gap-2 font-bold px-6 py-3.5 rounded-xl text-sm text-white flex items-center transition-all shadow-sm"
                   style={{ backgroundColor: '#C9960A' }}>
                   Explore Collection <ArrowRight size={16} />

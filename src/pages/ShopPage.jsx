@@ -4,14 +4,7 @@ import axios from 'axios'
 import { SlidersHorizontal, ChevronDown, X } from 'lucide-react'
 import ProductCard from '../components/ui/ProductCard-currency'
 import SEO from '../components/ui/SEO'
-
-const CATEGORIES = [
-  { label: 'All',          value: '' },
-  { label: 'Divine Idols', value: 'divine-idols' },
-  { label: 'Festive Sets', value: 'festive-sets' },
-  { label: 'Home Décor',   value: 'home-decor' },
-  { label: 'Kids & Toys',  value: 'kids-toys' },
-]
+import useCategories from '../hooks/useCategories'
 
 const SORT_OPTIONS = [
   { label: 'Newest',            value: 'newest' },
@@ -33,6 +26,10 @@ function sortProductsByImage(products) {
 }
 
 export default function ShopPage() {
+  const CATEGORIES = [
+    { label: 'All', value: '' },
+    ...useCategories().map(c => ({ label: c.name, value: c.slug })),
+  ]
   const { category: paramCat } = useParams()
   const [searchParams] = useSearchParams()
   const queryStr = searchParams.get('q') || ''

@@ -5,17 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useCart } from '../../context/CartContext'
 import { useWishlist } from '../../context/WishlistContext'
 import CurrencyToggle from '../ui/CurrencyToggle'
-
-const CATEGORIES = [
-  { label: 'Divine Idols', to: '/shop/divine-idols' },
-  { label: 'Festive Sets', to: '/shop/festive-sets' },
-  { label: 'Home Décor', to: '/shop/home-decor' },
-  { label: 'Candles & Fragrance', to: '/shop/candles' },
-  { label: 'Gift Sets', to: '/shop/gift-sets' },
-  //{ label: 'Summer Collection', to: '/shop/summer' },
-  { label: 'Kids & Toys', to: '/shop/kids-toys' },
-  { label: 'Rangoli & Decor', to: '/shop/rangoli' },
-]
+import useCategories from '../../hooks/useCategories'
 
 const NAV_LINKS = [
   { label: 'Home', to: '/' },
@@ -25,6 +15,7 @@ const NAV_LINKS = [
 ]
 
 export default function Navbar() {
+  const CATEGORIES = useCategories().map(c => ({ label: c.name, to: `/shop/${c.slug}` }))
   const { user, logout } = useAuth()
   const { cartCount, setCartOpen } = useCart()
   const { wishlistCount } = useWishlist()

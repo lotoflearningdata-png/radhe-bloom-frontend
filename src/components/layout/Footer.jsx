@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Phone, Mail, MapPin, Instagram, Facebook } from 'lucide-react'
+import useCategories from '../../hooks/useCategories'
 
 const QUICK_LINKS = [
   { label: 'Home', to: '/' },
@@ -8,14 +9,6 @@ const QUICK_LINKS = [
   { label: 'Contact Us', to: '/contact' },
 ]
 
-const CATEGORIES = [
-  { label: 'Divine Idols', to: '/shop/divine-idols' },
-  { label: 'Festive Sets', to: '/shop/festive-sets' },
-  { label: 'Gift Sets', to: '/shop/gift-sets' },
-  //{ label: 'Summer Collection', to: '/shop/summer' },
-  { label: 'Candles & Fragrance', to: '/shop/candles' },
-  { label: 'Kids & Toys', to: '/shop/kids-toys' },
-]
 
 const LEGAL_LINKS = [
   { label: 'Privacy Policy', to: '/privacy' },
@@ -24,6 +17,7 @@ const LEGAL_LINKS = [
 ]
 
 export default function Footer() {
+  const CATEGORIES = useCategories().slice(0, 7).map(c => ({ label: c.name, to: `/shop/${c.slug}` }))
   return (
     <footer className="bg-devotion-dark text-cream-300">
 
