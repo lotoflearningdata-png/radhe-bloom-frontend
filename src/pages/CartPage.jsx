@@ -23,7 +23,7 @@ export default function CartPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-4">
           {cart.map(item => (
-            <div key={item.product._id + (item.color || '')} className="bg-white rounded-2xl p-4 flex gap-4 shadow-card">
+            <div key={item.product._id + (item.color || '') + (item.size || '')} className="bg-white rounded-2xl p-4 flex gap-4 shadow-card">
               <img src={thumbUrl(item.product.images?.[0] || 'https://via.placeholder.com/400', 200)}
                 alt={item.product.name} className="w-24 h-24 rounded-xl object-cover bg-cream-100" />
               <div className="flex-1">
@@ -32,20 +32,24 @@ export default function CartPage() {
                   {item.product.name}
                 </Link>
                 <p className="text-xs text-saffron-500 uppercase tracking-wider mb-1">{item.product.category}</p>
-                {item.color && (
-                  <p className="text-xs text-cream-500 mb-3">Colour: <span className="font-bold text-devotion-brown">{item.color}</span></p>
+                {(item.color || item.size) && (
+                  <p className="text-xs text-cream-500 mb-3">
+                    {item.color && <>Colour: <span className="font-bold text-devotion-brown">{item.color}</span></>}
+                    {item.color && item.size && ' · '}
+                    {item.size && <>Size: <span className="font-bold text-devotion-brown">{item.size}</span></>}
+                  </p>
                 )}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 bg-cream-50 rounded-full px-3 py-1">
-                    <button onClick={() => updateQty(item.product._id, item.qty - 1, item.color)}
+                    <button onClick={() => updateQty(item.product._id, item.qty - 1, item.color, item.size)}
                       className="w-6 h-6 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-saffron-50 transition-colors text-sm">−</button>
                     <span className="w-6 text-center font-bold text-sm">{item.qty}</span>
-                    <button onClick={() => updateQty(item.product._id, item.qty + 1, item.color)}
+                    <button onClick={() => updateQty(item.product._id, item.qty + 1, item.color, item.size)}
                       className="w-6 h-6 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-saffron-50 transition-colors text-sm">+</button>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="font-display text-lg font-bold text-devotion-brown">{formatPrice(item.product.price * item.qty)}</span>
-                    <button onClick={() => removeFromCart(item.product._id, item.color)} className="text-red-400 hover:text-red-600 transition-colors">
+                    <span className="font-display text-lg font-bold text-devotion-brown">{formatPrice((item.price ?? item.product.price) * item.qty)}</span>
+                    <button onClick={() => removeFromCart(item.product._id, item.color, item.size)} className="text-red-400 hover:text-red-600 transition-colors">
                       <Trash2 size={16} />
                     </button>
                   </div>

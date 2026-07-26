@@ -3,7 +3,7 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 import { Plus, Edit, Trash2, X, Search, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react'
 
-const EMPTY = { name:'', description:'', price:'', originalPrice:'', category:'divine-idols', category2:'', colour:'', material:'', dimensions:'', weight:'', stock:50, featured:false, hidden:false, hsnCode:'', gstRate:18, images:[''], colorVariants:[] }
+const EMPTY = { name:'', description:'', price:'', originalPrice:'', category:'divine-idols', category2:'', colour:'', material:'', dimensions:'', stock:50, featured:false, hidden:false, hsnCode:'', gstRate:18, images:[''], colorVariants:[], sizeVariants:[], videoUrl:'' }
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([])
@@ -14,6 +14,8 @@ export default function AdminProducts() {
   const [search, setSearch]     = useState('')
   const [deleting, setDeleting] = useState(null)
   const [variantInput, setVariantInput] = useState('')
+  const [sizeInput, setSizeInput] = useState('')
+  const [sizePriceInput, setSizePriceInput] = useState('')
   const [cats, setCats] = useState([])
 
   useEffect(() => { fetchProducts() }, [])
@@ -30,15 +32,18 @@ export default function AdminProducts() {
     } finally { setLoading(false) }
   }
 
-  const openAdd  = () => { setForm(EMPTY); setVariantInput(''); setModal('add') }
+  const openAdd  = () => { setForm(EMPTY); setVariantInput(''); setSizeInput(''); setSizePriceInput(''); setModal('add') }
   const openEdit = (p) => {
     setForm({
       ...p,
       images: p.images?.length ? p.images : [''],
       colorVariants: p.colorVariants || [],
+      sizeVariants: p.sizeVariants || [],
       category2: (p.categories || []).find(c => c !== p.category) || '',
     })
     setVariantInput('')
+    setSizeInput('')
+    setSizePriceInput('')
     setModal('edit')
   }
 
@@ -48,6 +53,17 @@ export default function AdminProducts() {
     if (form.colorVariants?.includes(v)) return toast.error('This colour is already added')
     setForm(f => ({ ...f, colorVariants: [...(f.colorVariants || []), v] }))
     setVariantInput('')
+  }
+
+  const addSize = () => {
+    const label = sizeInput.trim()
+    const price = Number(sizePriceInput)
+    if (!label) return toast.error('Enter a size label')
+    if (!sizePriceInput || !Number.isFinite(price) || price <= 0) return toast.error('Enter a valid price for this size')
+    if (form.sizeVariants?.some(v => v.label === label)) return toast.error('This size is already added')
+    setForm(f => ({ ...f, sizeVariants: [...(f.sizeVariants || []), { label, price }] }))
+    setSizeInput('')
+    setSizePriceInput('')
   }
 
   const moveImage = (i, dir) => setForm(f => {
@@ -140,6 +156,7 @@ export default function AdminProducts() {
                   </button>
                 </div>
                 {p.featured && <span className="absolute top-2 left-2 bg-saffron-500 text-white text-xs px-2 py-0.5 rounded-full">Featured</span>}
+                {p.videoUrl && <span className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-0.5 rounded-full">▶ Video</span>}
                 {p.hidden && <span className="absolute top-2 right-2 bg-gray-800/90 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1"><EyeOff size={10} /> Hidden</span>}
               </div>
               <div className="p-3">
@@ -175,7 +192,6 @@ export default function AdminProducts() {
                   { key: 'colour',       label: 'Colour',         type: 'text' },
                   { key: 'material',     label: 'Material',       type: 'text' },
                   { key: 'dimensions',   label: 'Dimensions',     type: 'text' },
-                  { key: 'weight',       label: 'Weight',         type: 'text' },
                   { key: 'hsnCode',      label: 'HSN Code',       type: 'text' },
                   { key: 'gstRate',      label: 'GST Rate (%)',   type: 'number' },
                 ].map(field => (
@@ -254,6 +270,37 @@ export default function AdminProducts() {
                   <p className="text-xs text-cream-500 mt-1.5">If added, customers must pick a colour before adding this product to cart.</p>
                 </div>
 
+                {/* Size Variants */}
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-devotion-brown/70 mb-1.5 uppercase tracking-wider">Size Variants (optional) — each size can have its own price</label>
+                  <div className="flex gap-2 mb-2">
+                    <input type="text" value={sizeInput}
+                      onChange={e => setSizeInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addSize() } }}
+                      placeholder="e.g. Small"
+                      className="input-field text-sm flex-1" />
+                    <input type="number" value={sizePriceInput}
+                      onChange={e => setSizePriceInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addSize() } }}
+                      placeholder="Price (₹)"
+                      className="input-field text-sm w-32" />
+                    <button onClick={addSize}
+                      className="px-4 py-2 bg-saffron-100 text-saffron-600 rounded-xl text-sm font-bold hover:bg-saffron-200">Add</button>
+                  </div>
+                  {form.sizeVariants?.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {form.sizeVariants.map(s => (
+                        <span key={s.label} className="flex items-center gap-1.5 bg-cream-100 text-devotion-brown text-sm font-bold px-3 py-1 rounded-full">
+                          {s.label} — ₹{s.price}
+                          <button onClick={() => setForm(f => ({ ...f, sizeVariants: f.sizeVariants.filter(v => v.label !== s.label) }))}
+                            className="text-red-400 hover:text-red-600"><X size={12} /></button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <p className="text-xs text-cream-500 mt-1.5">If added, customers must pick a size before adding this product to cart, and the size's price is charged instead of the base price above.</p>
+                </div>
+
                 {/* Images */}
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-bold text-devotion-brown/70 mb-1.5 uppercase tracking-wider">Image URLs (Cloudinary) — first image is the main one</label>
@@ -291,6 +338,16 @@ export default function AdminProducts() {
                       )}
                     </div>
                   ))}
+                </div>
+
+                {/* Demo Video */}
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-devotion-brown/70 mb-1.5 uppercase tracking-wider">Demo Video URL (Cloudinary, optional)</label>
+                  <input type="url" value={form.videoUrl || ''}
+                    onChange={e => setForm(f => ({ ...f, videoUrl: e.target.value }))}
+                    placeholder="https://res.cloudinary.com/.../video/upload/..."
+                    className="input-field text-sm" />
+                  <p className="text-xs text-cream-500 mt-1.5">If added, this product appears in the homepage "Shorts" reel and shows the video on its product page.</p>
                 </div>
               </div>
             </div>

@@ -6,6 +6,7 @@ import { ArrowRight, Sparkles } from 'lucide-react'
 import ProductCard from '../components/ui/ProductCard-currency'
 import SEO from '../components/ui/SEO'
 import CategorySection from '../components/ui/CategorySection' // Imported new component
+import ShortsSection from '../components/ui/ShortsSection'
 
 const FEATURES = [
   { icon: '🚚', title: 'Free Shipping',     desc: 'On all orders above ₹999', color: 'bg-orange-50 text-orange-500' },
@@ -275,6 +276,9 @@ export default function HomePage() {
 
       {/* ── CATEGORIES (Replaced completely with the new scrolling layout component) ── */}
       <CategorySection />
+
+      {/* ── PRODUCT SHORTS (Instagram-Reels-style demo videos) ── */}
+      <ShortsSection />
 
       {/* ── GIFTING + CANDLES ── */}
       {/* <section className="py-20 max-w-7xl mx-auto px-4">

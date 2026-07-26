@@ -22,9 +22,12 @@ export default function ProductCard({ product, index = 0 }) {
     : null
 
   const handleAddToCart = async (e) => {
-    if (product.colorVariants?.length > 0) {
-      // let the card's Link navigate to the product page so a colour can be chosen
-      toast('Choose a colour on the product page', { icon: '🎨' })
+    if (product.colorVariants?.length > 0 || product.sizeVariants?.length > 0) {
+      // let the card's Link navigate to the product page so a colour/size can be chosen
+      const what = product.colorVariants?.length > 0 && product.sizeVariants?.length > 0
+        ? 'a colour and size'
+        : product.colorVariants?.length > 0 ? 'a colour' : 'a size'
+      toast(`Choose ${what} on the product page`, { icon: '🎨' })
       return
     }
     e.preventDefault()

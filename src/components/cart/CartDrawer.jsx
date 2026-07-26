@@ -42,7 +42,7 @@ export default function CartDrawer() {
             </div>
           ) : (
             cart.map(item => (
-              <div key={item.product._id + (item.color || '')} className="bg-white rounded-2xl p-3 flex gap-3 shadow-card">
+              <div key={item.product._id + (item.color || '') + (item.size || '')} className="bg-white rounded-2xl p-3 flex gap-3 shadow-card">
                 <img
                   src={thumbUrl(item.product.images?.[0] || 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png', 200)}
                   alt={item.product.name}
@@ -53,21 +53,25 @@ export default function CartDrawer() {
                   <h4 className="font-display text-sm text-devotion-brown leading-snug line-clamp-2 mb-1">
                     {item.product.name}
                   </h4>
-                  {item.color && (
-                    <p className="text-xs text-cream-500 mb-0.5">Colour: <span className="font-bold text-devotion-brown">{item.color}</span></p>
+                  {(item.color || item.size) && (
+                    <p className="text-xs text-cream-500 mb-0.5">
+                      {item.color && <>Colour: <span className="font-bold text-devotion-brown">{item.color}</span></>}
+                      {item.color && item.size && ' · '}
+                      {item.size && <>Size: <span className="font-bold text-devotion-brown">{item.size}</span></>}
+                    </p>
                   )}
-                  <p className="text-saffron-600 font-bold text-sm">{formatPrice(item.product.price)}</p>
+                  <p className="text-saffron-600 font-bold text-sm">{formatPrice(item.price ?? item.product.price)}</p>
                   <div className="flex items-center gap-2 mt-2">
-                    <button onClick={() => updateQty(item.product._id, item.qty - 1, item.color)}
+                    <button onClick={() => updateQty(item.product._id, item.qty - 1, item.color, item.size)}
                       className="w-7 h-7 rounded-full bg-cream-100 hover:bg-saffron-100 flex items-center justify-center transition-colors">
                       <Minus size={12} />
                     </button>
                     <span className="text-sm font-bold w-5 text-center">{item.qty}</span>
-                    <button onClick={() => updateQty(item.product._id, item.qty + 1, item.color)}
+                    <button onClick={() => updateQty(item.product._id, item.qty + 1, item.color, item.size)}
                       className="w-7 h-7 rounded-full bg-cream-100 hover:bg-saffron-100 flex items-center justify-center transition-colors">
                       <Plus size={12} />
                     </button>
-                    <button onClick={() => removeFromCart(item.product._id, item.color)}
+                    <button onClick={() => removeFromCart(item.product._id, item.color, item.size)}
                       className="ml-auto text-red-400 hover:text-red-600 transition-colors">
                       <Trash2 size={14} />
                     </button>

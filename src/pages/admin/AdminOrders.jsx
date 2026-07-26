@@ -49,6 +49,15 @@ export default function AdminOrders() {
     } catch { toast.error('Failed to confirm payment') }
   }
 
+  const confirmCOD = async (orderId) => {
+    if (!confirm('Mark cash as collected for this order?')) return
+    try {
+      await axios.put(`/api/orders/${orderId}/confirm-cod`, {})
+      toast.success('COD payment marked as collected!')
+      fetchOrders()
+    } catch { toast.error('Failed to confirm payment') }
+  }
+
   const filtered = orders.filter(o =>
     !search || o._id.includes(search) ||
     o.shippingAddress?.name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -141,7 +150,7 @@ export default function AdminOrders() {
                   <div>
                     <p className="text-xs font-bold text-cream-500 uppercase mb-2">Items</p>
                     {order.items?.map((item, i) => (
-                      <p key={i} className="text-devotion-brown">{item.product?.name}{item.color ? ` (${item.color})` : ''} ×{item.qty} — ₹{item.price * item.qty}</p>
+                      <p key={i} className="text-devotion-brown">{item.product?.name}{[item.color, item.size].filter(Boolean).length ? ` (${[item.color, item.size].filter(Boolean).join(', ')})` : ''} ×{item.qty} — ₹{item.price * item.qty}</p>
                     ))}
                   </div>
 
@@ -167,6 +176,11 @@ export default function AdminOrders() {
                       <button onClick={() => confirmPayoneer(order._id)}
                         className="btn-primary text-xs px-4 py-2">
                         ✅ Confirm Payoneer Payment
+                      </button>
+                    ) : order.paymentMethod === 'cod' && order.paymentStatus !== 'paid' ? (
+                      <button onClick={() => confirmCOD(order._id)}
+                        className="btn-primary text-xs px-4 py-2">
+                        ✅ Mark Cash Collected
                       </button>
                     ) : (
                       <p className="text-cream-500 text-xs">Awaiting Shiprocket assignment</p>

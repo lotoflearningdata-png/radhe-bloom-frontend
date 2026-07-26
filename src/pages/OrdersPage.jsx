@@ -175,7 +175,7 @@ export default function OrdersPage() {
                     <div className="space-y-2">
                       {order.items?.map((item, i) => (
                         <div key={i} className="flex justify-between text-sm">
-                          <span className="text-devotion-brown">{item.product?.name}{item.color ? ` (${item.color})` : ''} ×{item.qty}</span>
+                          <span className="text-devotion-brown">{item.product?.name}{[item.color, item.size].filter(Boolean).length ? ` (${[item.color, item.size].filter(Boolean).join(', ')})` : ''} ×{item.qty}</span>
                           <span className="font-bold">₹{(item.price * item.qty).toFixed(0)}</span>
                         </div>
                       ))}

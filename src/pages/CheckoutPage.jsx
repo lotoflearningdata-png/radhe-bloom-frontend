@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext'
 import { useCurrency } from '../context/CurrencyContext'
 import CouponInput from '../components/checkout/CouponInput'
 import { thumbUrl } from '../utils/image'
-import { Lock, ArrowRight, Globe, MapPin } from 'lucide-react'
+import { Lock, ArrowRight, Globe, MapPin, Banknote } from 'lucide-react'
 
 const INDIAN_STATES = [
   'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh',
@@ -26,6 +26,7 @@ export default function CheckoutPage() {
   const total       = cartTotal + shipping
 
   const [isInternational, setIsInternational] = useState(false)
+  const [paymentMethod, setPaymentMethod] = useState('razorpay') // 'razorpay' | 'cod'
   const [loading, setLoading] = useState(false)
   const [appliedCoupon, setAppliedCoupon] = useState(null)
   const [form, setForm] = useState({
@@ -111,7 +112,7 @@ export default function CheckoutPage() {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
               shippingAddress: { ...form, country: 'India' },
-              items: cart.map(i => ({ product: i.product._id, qty: i.qty, price: i.product.price, color: i.color })),
+              items: cart.map(i => ({ product: i.product._id, qty: i.qty, price: i.price ?? i.product.price, color: i.color, size: i.size })),
               total: finalTotal,
               couponCode: appliedCoupon?.code || null,
               discount: appliedCoupon?.discount || 0,
@@ -139,6 +140,32 @@ export default function CheckoutPage() {
     }
   }
 
+  // ── Cash on Delivery (Domestic) ─────────────────────────────────
+  const handleCOD = async () => {
+    if (!validateForm()) return
+    setLoading(true)
+    try {
+      const { data: order } = await axios.post('/api/orders/create-cod', {
+        shippingAddress: { ...form, country: 'India' },
+        items: cart.map(i => ({ product: i.product._id, qty: i.qty, price: i.price ?? i.product.price, color: i.color, size: i.size })),
+        total: finalTotal,
+        couponCode: appliedCoupon?.code || null,
+        discount: appliedCoupon?.discount || 0,
+      })
+      clearCart()
+      if (user && !user.phone && form.phone) {
+        try {
+          await axios.put('/api/auth/profile', { name: user.name, phone: form.phone })
+        } catch { }
+      }
+      navigate(`/order-success/${order._id}`)
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Order creation failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // ── Payoneer (International) ───────────────────────────────────
   const handleInternational = async () => {
     if (!validateForm()) return
@@ -146,7 +173,7 @@ export default function CheckoutPage() {
     try {
       const { data: order } = await axios.post('/api/orders/create-international', {
         shippingAddress: form,
-        items: cart.map(i => ({ product: i.product._id, qty: i.qty, price: i.product.price, color: i.color })),
+        items: cart.map(i => ({ product: i.product._id, qty: i.qty, price: i.price ?? i.product.price, color: i.color, size: i.size })),
         total: finalTotal,
         couponCode: appliedCoupon?.code || null,
         discount: appliedCoupon?.discount || 0,
@@ -260,6 +287,35 @@ export default function CheckoutPage() {
             </div>
           </div>
 
+          {/* Payment Method — domestic only (international always goes via Payoneer) */}
+          {!isInternational && (
+            <div className="bg-white rounded-2xl p-5 shadow-card">
+              <h3 className="font-display text-lg text-devotion-brown mb-4">Payment Method</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <button onClick={() => setPaymentMethod('razorpay')}
+                  className={"flex items-center gap-3 p-4 rounded-xl border-2 transition-all " +
+                    (paymentMethod === 'razorpay' ? 'border-saffron-400 bg-saffron-50' : 'border-cream-200 hover:border-saffron-200')}>
+                  <Lock className={paymentMethod === 'razorpay' ? 'text-saffron-500' : 'text-cream-400'} size={20} />
+                  <div className="text-left">
+                    <p className={"font-bold text-sm " + (paymentMethod === 'razorpay' ? 'text-saffron-700' : 'text-devotion-brown')}>Pay Online</p>
+                    <p className="text-xs text-cream-500">UPI, GPay, Cards</p>
+                  </div>
+                  {paymentMethod === 'razorpay' && <span className="ml-auto text-saffron-500 text-lg">✓</span>}
+                </button>
+                <button onClick={() => setPaymentMethod('cod')}
+                  className={"flex items-center gap-3 p-4 rounded-xl border-2 transition-all " +
+                    (paymentMethod === 'cod' ? 'border-saffron-400 bg-saffron-50' : 'border-cream-200 hover:border-saffron-200')}>
+                  <Banknote className={paymentMethod === 'cod' ? 'text-saffron-500' : 'text-cream-400'} size={20} />
+                  <div className="text-left">
+                    <p className={"font-bold text-sm " + (paymentMethod === 'cod' ? 'text-saffron-700' : 'text-devotion-brown')}>Cash on Delivery</p>
+                    <p className="text-xs text-cream-500">Pay when it arrives</p>
+                  </div>
+                  {paymentMethod === 'cod' && <span className="ml-auto text-saffron-500 text-lg">✓</span>}
+                </button>
+              </div>
+            </div>
+          )}
+
           {!user && (
             <div className="bg-saffron-50 border border-saffron-200 rounded-2xl p-4 text-sm">
               💡 <Link to="/login" className="font-bold underline hover:text-saffron-700">Login</Link> to track your orders easily
@@ -274,14 +330,14 @@ export default function CheckoutPage() {
 
             <div className="space-y-3 mb-5 max-h-56 overflow-y-auto">
               {cart.map(item => (
-                <div key={item.product._id + (item.color || '')} className="flex gap-3 items-center">
+                <div key={item.product._id + (item.color || '') + (item.size || '')} className="flex gap-3 items-center">
                   <img src={thumbUrl(item.product.images?.[0] || 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png', 200)}
                     alt="" className="w-12 h-12 rounded-lg object-cover bg-cream-100" />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-bold text-devotion-brown line-clamp-1">{item.product.name}</p>
-                    <p className="text-xs text-cream-500">{item.color ? `${item.color} · ` : ''}×{item.qty}</p>
+                    <p className="text-xs text-cream-500">{[item.color, item.size].filter(Boolean).join(', ')}{(item.color || item.size) ? ' · ' : ''}×{item.qty}</p>
                   </div>
-                  <span className="text-sm font-bold text-devotion-brown">{formatPrice(item.product.price * item.qty)}</span>
+                  <span className="text-sm font-bold text-devotion-brown">{formatPrice((item.price ?? item.product.price) * item.qty)}</span>
                 </div>
               ))}
             </div>
@@ -328,11 +384,19 @@ export default function CheckoutPage() {
 
             {/* Payment Button */}
             {!isInternational ? (
-              <button onClick={handleRazorpay} disabled={loading}
-                className="btn-primary w-full justify-center text-base disabled:opacity-60 disabled:cursor-not-allowed">
-                <Lock size={16} />
-                {loading ? 'Processing...' : `Pay ${formatPrice(finalTotal)} via Razorpay`}
-              </button>
+              paymentMethod === 'cod' ? (
+                <button onClick={handleCOD} disabled={loading}
+                  className="btn-primary w-full justify-center text-base disabled:opacity-60 disabled:cursor-not-allowed">
+                  <Banknote size={16} />
+                  {loading ? 'Placing Order...' : `Place Order — Pay ${formatPrice(finalTotal)} on Delivery`}
+                </button>
+              ) : (
+                <button onClick={handleRazorpay} disabled={loading}
+                  className="btn-primary w-full justify-center text-base disabled:opacity-60 disabled:cursor-not-allowed">
+                  <Lock size={16} />
+                  {loading ? 'Processing...' : `Pay ${formatPrice(finalTotal)} via Razorpay`}
+                </button>
+              )
             ) : (
               <button onClick={handleInternational} disabled={loading}
                 className="btn-primary w-full justify-center text-base disabled:opacity-60 disabled:cursor-not-allowed">
@@ -341,7 +405,7 @@ export default function CheckoutPage() {
               </button>
             )}
 
-            {!isInternational && (
+            {!isInternational && paymentMethod === 'razorpay' && (
               <div className="mt-3 flex flex-wrap gap-2 justify-center">
                 {['GPay', 'PhonePe', 'Paytm', 'UPI', 'Cards'].map(m => (
                   <span key={m} className="text-xs bg-cream-100 text-cream-500 px-2 py-1 rounded-full">{m}</span>
@@ -350,14 +414,19 @@ export default function CheckoutPage() {
             )}
 
             {/* Currency disclaimer — only shows if USD selected */}
-            {currency === 'USD' && (
+            {currency === 'USD' && paymentMethod === 'razorpay' && !isInternational && (
               <p className="text-xs text-center text-cream-500 mt-2">
                 * Prices shown in USD for reference. You will be charged in INR (₹{finalTotal.toFixed(2)}) via Razorpay.
               </p>
             )}
 
             <p className="text-xs text-center text-cream-500 mt-3 flex items-center justify-center gap-1">
-              <Lock size={10} /> {isInternational ? 'Secure order • Payoneer payment via email' : 'Secured by Razorpay'}
+              <Lock size={10} />{' '}
+              {isInternational
+                ? 'Secure order • Payoneer payment via email'
+                : paymentMethod === 'cod'
+                  ? 'Pay in cash to the delivery agent'
+                  : 'Secured by Razorpay'}
             </p>
           </div>
         </div>
