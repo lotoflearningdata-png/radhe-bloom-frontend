@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import ProductCard from '../components/ui/ProductCard-currency'
 import SEO from '../components/ui/SEO'
 import CategorySection from '../components/ui/CategorySection' // Imported new component
 import ShortsSection from '../components/ui/ShortsSection'
+import { bestProductImage } from '../utils/bestImage'
+import { thumbUrl } from '../utils/image'
 
 const FEATURES = [
   { icon: '🚚', title: 'Free Shipping',     desc: 'On all orders above ₹999', color: 'bg-orange-50 text-orange-500' },
@@ -71,9 +73,19 @@ export default function HomePage() {
   const [newArr, setNewArr]     = useState([])
   const [loading, setLoading]   = useState(true)
   const [tab, setTab]           = useState('featured')
+  const [janmashtamiImg, setJanmashtamiImg] = useState(null)
+
+  const janmashtamiRef = useRef(null)
+  const { scrollYProgress: janmashtamiScroll } = useScroll({
+    target: janmashtamiRef,
+    offset: ['start end', 'end start'],
+  })
+  const janmashtamiTextY   = useTransform(janmashtamiScroll, [0, 1], [100, -100])
+  const janmashtamiImgY    = useTransform(janmashtamiScroll, [0, 1], [140, -140])
+  const janmashtamiPetalsY = useTransform(janmashtamiScroll, [0, 1], [-80, 180])
 
   useEffect(() => {
-    const t = setInterval(() => setSlide(s => (s + 1) % SLIDES.length), 5000)
+    const t = setInterval(() => setSlide(s => (s + 1) % SLIDES.length), 10000)
     return () => clearInterval(t)
   }, [])
 
@@ -84,6 +96,18 @@ export default function HomePage() {
     axios.get('/api/products?sort=newest&limit=8')
       .then(r => { setNewArr(sortProductsByImage(r.data.products || [])); setLoading(false) })
       .catch(() => setLoading(false))
+    axios.get('/api/settings')
+      .then(r => {
+        const pinned = r.data.settings?.janmashtamiHeroImage
+        if (pinned) {
+          setJanmashtamiImg(pinned)
+        } else {
+          axios.get('/api/products?category=janmashtami&limit=8')
+            .then(r2 => setJanmashtamiImg(bestProductImage(r2.data.products || [])))
+            .catch(() => {})
+        }
+      })
+      .catch(() => {})
   }, [])
 
   const s    = SLIDES[slide]
@@ -233,42 +257,136 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── ELEGANT JANMASHTAMI FEATURE ── */}
-      <section className="py-16 bg-[#FDFAF4] border-y border-[#F5ECD9] relative overflow-hidden">
-        {/* Subtle decorative background detail */}
-        <div className="absolute inset-0 opacity-25 pointer-events-none" 
-          style={{ backgroundImage: 'radial-gradient(circle, #D4A853 1px, transparent 1px)', backgroundSize: '32px 32px' }} 
-        />
-        
-        <div className="max-w-5xl mx-auto px-4 relative z-10">
-          <div className="bg-[#F5ECD9] border border-[#D4A853]/30 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 shadow-sm">
-            
-            {/* Left Column: Premium Text Typography */}
-            <div className="max-w-xl text-center md:text-left">
-              <span className="inline-block bg-[#C9960A]/10 text-[#C9960A] text-xs font-bold uppercase tracking-[3px] px-4 py-1.5 rounded-full mb-4">
+      {/* ── JANMASHTAMI HERO ── */}
+      <section ref={janmashtamiRef} className="relative min-h-[65vh] flex items-center overflow-hidden bg-devotion-dark">
+        {/* Rich festive gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-devotion-dark via-[#4a2f12] to-devotion-dark" />
+        {/* Dot texture, consistent with the main hero */}
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #e0d28f 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+        {/* Soft glow blobs for depth */}
+        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-saffron-500/20 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-saffron-500/10 blur-3xl pointer-events-none" />
+
+        {/* Drifting festive petals — parallax layer, moves fastest on scroll */}
+        <motion.div style={{ y: janmashtamiPetalsY }} className="absolute inset-0 pointer-events-none">
+          {['🌼','🪔','✨','🌸'].map((p, i) => (
+            <motion.span key={i}
+              className="absolute text-2xl opacity-30 select-none"
+              style={{ left: `${12 + i * 24}%`, top: '-5%' }}
+              animate={{ y: ['0vh', '75vh'], rotate: [0, 180], opacity: [0, 0.35, 0] }}
+              transition={{ duration: 10 + i * 2, repeat: Infinity, ease: 'linear', delay: i * 2.2 }}>
+              {p}
+            </motion.span>
+          ))}
+        </motion.div>
+
+        <div className="max-w-7xl mx-auto px-4 w-full py-20 relative z-10">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-14">
+
+            {/* Text — subtle parallax on scroll */}
+            <motion.div className="max-w-xl text-center md:text-left"
+              style={{ y: janmashtamiTextY }}
+              initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+              <span className="inline-flex items-center gap-2 bg-saffron-400/10 text-saffron-400 text-xs font-bold uppercase tracking-[3px] px-4 py-1.5 rounded-full mb-5 border border-saffron-400/20">
                 ✨ Season Special
               </span>
-              <h2 className="font-display text-4xl md:text-5xl text-[#3D2B1F] leading-tight mb-4">
-                The Janmashtami <br className="hidden md:block"/>Collection
-              </h2>
-              <p className="text-[#3D2B1F]/80 text-base leading-relaxed mb-0">
-                Celebrate the divine birth with our hand-picked selection. Discover premium Makhan Chor sets, elegant Dahi Handi décor, Bal Krishna idols, and handcrafted Ashta Sakhi figurines designed to elevate your home mandir.
-              </p>
-            </div>
 
-            {/* Right Column: Clean, Elegant Call to Action Box */}
-            <div className="flex flex-col items-center justify-center bg-[#FDFAF4] border border-[#D4A853]/40 p-8 rounded-2xl text-center min-w-[280px] sm:min-w-[320px] shadow-sm shrink-0">
-              <span className="text-5xl mb-3 block animate-pulse">🎉</span>
-              <h3 className="font-display text-lg font-semibold text-[#3D2B1F] mb-1">Most Loved Collection</h3>
-              
-              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="w-full">
-                <Link to="/shop/janmashtami"
-                  className="w-full justify-center gap-2 font-bold px-6 py-3.5 rounded-xl text-sm text-white flex items-center transition-all shadow-sm"
-                  style={{ backgroundColor: '#C9960A' }}>
-                  Explore Collection <ArrowRight size={16} />
+              <motion.div
+                initial="hidden" whileInView="visible" viewport={{ once: true }}
+                variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } } }}>
+                <h2 className="font-display text-5xl md:text-6xl text-white leading-none mb-1 flex flex-wrap gap-x-3 justify-center md:justify-start">
+                  {['The', 'Janmashtami'].map((word) => (
+                    <motion.span key={word} className="inline-block"
+                      variants={{ hidden: { opacity: 0, y: 28 }, visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } } }}>
+                      {word}
+                    </motion.span>
+                  ))}
+                </h2>
+                <h2 className="font-display text-5xl md:text-6xl text-saffron-400 leading-none italic mb-6 flex justify-center md:justify-start">
+                  <motion.span className="inline-block"
+                    variants={{ hidden: { opacity: 0, y: 28 }, visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } } }}>
+                    Collection
+                  </motion.span>
+                </h2>
+              </motion.div>
+
+              <p className="text-cream-200 text-base md:text-lg leading-relaxed mb-8 max-w-lg">
+                From the swaying Radha Krishna Jhula to mischievous Makhan Chor Leela sets, dreamy Dahi Handi mataki décor and the beloved Ashta Sakhi idols — each piece is hand-picked to bring Krishna's playful leela home this Janmashtami.
+              </p>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }} className="inline-block">
+                <Link to="/shop/janmashtami" className="btn-primary text-base px-8 py-4 relative overflow-hidden">
+                  <span className="relative z-10 inline-flex items-center gap-2">
+                    Explore Collection <ArrowRight size={18} />
+                  </span>
+                  <motion.span
+                    className="absolute inset-y-0 w-1/3 bg-white/30 pointer-events-none"
+                    style={{ transform: 'skewX(-20deg)' }}
+                    animate={{ left: ['-40%', '140%'] }}
+                    transition={{ duration: 2.2, repeat: Infinity, repeatDelay: 1.8, ease: 'easeInOut' }}
+                  />
                 </Link>
               </motion.div>
-            </div>
+            </motion.div>
+
+            {/* Animated product medallion — moves faster than text on scroll for depth */}
+            <motion.div className="relative shrink-0"
+              style={{ y: janmashtamiImgY }}
+              initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.15 }}>
+              <motion.div className="relative w-56 h-56 md:w-64 md:h-64"
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}>
+                {/* Soft glowing halo */}
+                <motion.span className="absolute -inset-3 rounded-full bg-saffron-400/30 blur-xl"
+                  animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0.85, 0.5] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }} />
+
+                {/* Spinning festive gradient ring */}
+                <motion.div className="absolute inset-0 rounded-full shadow-2xl"
+                  style={{ background: 'conic-gradient(from 0deg, #F4C430, #C9960A, #7B2D26, #C9960A, #F4C430)' }}
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 6, repeat: Infinity, ease: 'linear' }} />
+
+                {/* Twinkling sparkles around the ring */}
+                {[
+                  { top: '-6%', left: '50%', delay: 0 },
+                  { top: '50%', left: '104%', delay: 0.7 },
+                  { top: '104%', left: '20%', delay: 1.4 },
+                  { top: '20%', left: '-8%', delay: 2.1 },
+                ].map((s, i) => (
+                  <motion.span key={i}
+                    className="absolute text-lg -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none"
+                    style={{ top: s.top, left: s.left }}
+                    animate={{ opacity: [0, 1, 0], scale: [0.6, 1.1, 0.6] }}
+                    transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut', delay: s.delay }}>
+                    ✨
+                  </motion.span>
+                ))}
+
+                <div className="absolute inset-[5px] rounded-full overflow-hidden shadow-inner bg-[#F5ECD9]">
+                  {janmashtamiImg ? (
+                    <motion.img
+                      key={janmashtamiImg}
+                      src={thumbUrl(janmashtamiImg, 500)}
+                      alt="Janmashtami Collection"
+                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="skeleton w-full h-full rounded-full" />
+                  )}
+                </div>
+                <motion.span className="absolute -bottom-2 -right-2 text-4xl drop-shadow-lg"
+                  animate={{ rotate: [0, -12, 12, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}>
+                  🎉
+                </motion.span>
+                <motion.div className="absolute -top-3 -left-3 bg-white rounded-full px-3 py-1.5 shadow-lg"
+                  animate={{ y: [0, 6, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}>
+                  <span className="text-xs font-bold text-devotion-brown whitespace-nowrap">Most Loved</span>
+                </motion.div>
+              </motion.div>
+            </motion.div>
 
           </div>
         </div>

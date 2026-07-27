@@ -27,6 +27,7 @@ import TermsPage from './pages/TermsPage'
 import ShippingPage from './pages/ShippingPage'
 import { CurrencyProvider } from './context/CurrencyContext'
 import AdminCoupons from './pages/admin/AdminCoupons'
+import AdminSettings from './pages/admin/AdminSettings'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import VerifyEmailPage from './pages/VerifyEmailPage'
@@ -68,6 +69,7 @@ export default function App() {
               <Route path="categories" element={<AdminCategories />} />
               <Route path="customers" element={<AdminCustomers />} />
               <Route path="coupons" element={<AdminCoupons />} />
+              <Route path="settings" element={<AdminSettings />} />
             </Route>
             <Route path="*" element={<NotFoundPage />} />
           </Routes>

@@ -58,6 +58,33 @@ export default function AdminOrders() {
     } catch { toast.error('Failed to confirm payment') }
   }
 
+  const retryShiprocket = async (orderId) => {
+    setUpdating(orderId)
+    try {
+      await axios.post(`/api/orders/${orderId}/retry-shiprocket`)
+      toast.success('Shiprocket shipment created!')
+      fetchOrders()
+    } catch (err) { toast.error(err.response?.data?.message || 'Retry failed') }
+    finally { setUpdating(null) }
+  }
+
+  const generateLabel = async (orderId) => {
+    try {
+      const { data } = await axios.post(`/api/orders/${orderId}/generate-label`)
+      if (data.labelUrl) window.open(data.labelUrl, '_blank')
+      else toast.error('Label not ready yet — try again shortly')
+    } catch (err) { toast.error(err.response?.data?.message || 'Failed to generate label') }
+  }
+
+  const cancelShipment = async (orderId) => {
+    if (!confirm('Cancel this Shiprocket shipment?')) return
+    try {
+      await axios.post(`/api/orders/${orderId}/cancel-shipment`)
+      toast.success('Shipment cancelled')
+      fetchOrders()
+    } catch (err) { toast.error(err.response?.data?.message || 'Failed to cancel shipment') }
+  }
+
   const filtered = orders.filter(o =>
     !search || o._id.includes(search) ||
     o.shippingAddress?.name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -167,12 +194,7 @@ export default function AdminOrders() {
                   {/* Tracking / Actions */}
                   <div>
                     <p className="text-xs font-bold text-cream-500 uppercase mb-2">Tracking & Actions</p>
-                    {order.awbCode ? (
-                      <div>
-                        <p className="text-devotion-brown">AWB: <span className="font-bold">{order.awbCode}</span></p>
-                        <p className="text-devotion-brown">Courier: {order.courierName}</p>
-                      </div>
-                    ) : order.isInternational && order.paymentStatus !== 'paid' ? (
+                    {order.isInternational && order.paymentStatus !== 'paid' ? (
                       <button onClick={() => confirmPayoneer(order._id)}
                         className="btn-primary text-xs px-4 py-2">
                         ✅ Confirm Payoneer Payment
@@ -183,7 +205,48 @@ export default function AdminOrders() {
                         ✅ Mark Cash Collected
                       </button>
                     ) : (
-                      <p className="text-cream-500 text-xs">Awaiting Shiprocket assignment</p>
+                      <div className="space-y-2">
+                        {order.awbCode && (
+                          <div>
+                            <p className="text-devotion-brown">AWB: <span className="font-bold">{order.awbCode}</span></p>
+                            <p className="text-devotion-brown">Courier: {order.courierName}</p>
+                          </div>
+                        )}
+
+                        {order.shippingStatus === 'failed' && (
+                          <div className="bg-red-50 border border-red-200 rounded-xl p-2">
+                            <p className="text-red-600 text-xs font-bold">⚠️ Shiprocket order creation failed</p>
+                            {order.shiprocketError && <p className="text-red-500 text-xs mt-0.5">{order.shiprocketError}</p>}
+                          </div>
+                        )}
+
+                        {!order.isInternational && order.shippingStatus !== 'cancelled' && (
+                          <div className="flex flex-wrap gap-2">
+                            {order.shippingStatus !== 'created' && (
+                              <button onClick={() => retryShiprocket(order._id)} disabled={updating === order._id}
+                                className="btn-outline text-xs px-3 py-1.5 disabled:opacity-50">
+                                {order.shippingStatus === 'failed' ? '🔁 Retry Shiprocket' : '📦 Create Shipment'}
+                              </button>
+                            )}
+                            {order.shipmentId && (
+                              <button onClick={() => generateLabel(order._id)}
+                                className="btn-outline text-xs px-3 py-1.5">
+                                🏷️ Label
+                              </button>
+                            )}
+                            {order.shiprocketOrderId && (
+                              <button onClick={() => cancelShipment(order._id)}
+                                className="text-xs px-3 py-1.5 rounded-full border border-red-200 text-red-500 hover:bg-red-50 transition-colors">
+                                ✕ Cancel Shipment
+                              </button>
+                            )}
+                          </div>
+                        )}
+
+                        {order.shippingStatus === 'cancelled' && (
+                          <p className="text-cream-500 text-xs">Shipment cancelled</p>
+                        )}
+                      </div>
                     )}
                     <p className="text-xs text-cream-400 mt-2">Order ID: {order._id}</p>
                   </div>

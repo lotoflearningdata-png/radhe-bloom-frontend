@@ -115,7 +115,7 @@ export default function ShortsSection() {
         viewport={{ once: true }}>
         <div>
           <p className="section-subtitle mb-2">✦ Watch & Shop ✦</p>
-          <h2 className="section-title">Product Shorts</h2>
+          <h2 className="section-title">Product Demos</h2>
         </div>
       </motion.div>
 

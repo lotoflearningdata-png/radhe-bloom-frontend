@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import {
   LayoutDashboard, Package, ShoppingBag, Users,
-  LogOut, Menu, X, ChevronRight, Tag, Layers
+  LogOut, Menu, X, ChevronRight, Tag, Layers, Settings
 } from 'lucide-react'
 
 const NAV = [
@@ -13,6 +13,7 @@ const NAV = [
   { label: 'Categories', to: '/admin/categories', icon: Layers },
   { label: 'Coupons',    to: '/admin/coupons',  icon: Tag },
   { label: 'Customers',  to: '/admin/customers',icon: Users },
+  { label: 'Settings',   to: '/admin/settings', icon: Settings },
 ]
 
 export default function AdminLayout() {

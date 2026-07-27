@@ -3,7 +3,7 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 import { Plus, Edit, Trash2, X, Search, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react'
 
-const EMPTY = { name:'', description:'', price:'', originalPrice:'', category:'divine-idols', category2:'', colour:'', material:'', dimensions:'', stock:50, featured:false, hidden:false, hsnCode:'', gstRate:18, images:[''], colorVariants:[], sizeVariants:[], videoUrl:'' }
+const EMPTY = { name:'', description:'', price:'', originalPrice:'', category:'divine-idols', category2:'', colour:'', material:'', dimensions:'', weight:0.25, packageLength:10, packageBreadth:5, packageHeight:4, stock:50, featured:false, hidden:false, hsnCode:'', gstRate:18, images:[''], colorVariants:[], sizeVariants:[], videoUrl:'' }
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([])
@@ -78,7 +78,7 @@ export default function AdminProducts() {
     if (!form.name || !form.price || !form.category) return toast.error('Name, price and category are required')
     setSaving(true)
     try {
-      const payload = { ...form, price: Number(form.price), originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined, stock: Number(form.stock), gstRate: form.gstRate === '' ? 18 : Number(form.gstRate), images: form.images.filter(Boolean), categories: form.category2 && form.category2 !== form.category ? [form.category2] : [] }
+      const payload = { ...form, price: Number(form.price), originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined, stock: Number(form.stock), gstRate: form.gstRate === '' ? 18 : Number(form.gstRate), weight: form.weight === '' ? 0.25 : Number(form.weight), packageLength: form.packageLength === '' ? 10 : Number(form.packageLength), packageBreadth: form.packageBreadth === '' ? 5 : Number(form.packageBreadth), packageHeight: form.packageHeight === '' ? 4 : Number(form.packageHeight), images: form.images.filter(Boolean), categories: form.category2 && form.category2 !== form.category ? [form.category2] : [] }
       if (modal === 'add') {
         const { data } = await axios.post('/api/products', payload)
         setProducts(prev => [data.product, ...prev])
@@ -194,6 +194,10 @@ export default function AdminProducts() {
                   { key: 'dimensions',   label: 'Dimensions',     type: 'text' },
                   { key: 'hsnCode',      label: 'HSN Code',       type: 'text' },
                   { key: 'gstRate',      label: 'GST Rate (%)',   type: 'number' },
+                  { key: 'weight',         label: 'Shipping Weight (kg)',   type: 'number' },
+                  { key: 'packageLength',  label: 'Package Length (cm)',    type: 'number' },
+                  { key: 'packageBreadth', label: 'Package Breadth (cm)',   type: 'number' },
+                  { key: 'packageHeight',  label: 'Package Height (cm)',    type: 'number' },
                 ].map(field => (
                   <div key={field.key} className={field.span === 2 ? 'sm:col-span-2' : ''}>
                     <label className="block text-xs font-bold text-devotion-brown/70 mb-1.5 uppercase tracking-wider">{field.label}</label>

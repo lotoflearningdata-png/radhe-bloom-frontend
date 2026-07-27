@@ -29,6 +29,7 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState('razorpay') // 'razorpay' | 'cod'
   const [loading, setLoading] = useState(false)
   const [appliedCoupon, setAppliedCoupon] = useState(null)
+  const [pincodeCheck, setPincodeCheck] = useState(null) // null | 'checking' | { serviceable, skipped }
   const [form, setForm] = useState({
     name:    user?.name || '',
     email:   user?.email || '',
@@ -63,7 +64,21 @@ export default function CheckoutPage() {
     </div>
   )
 
-  const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
+  const handleChange = e => {
+    setForm(f => ({ ...f, [e.target.name]: e.target.value }))
+    if (e.target.name === 'pincode') setPincodeCheck(null)
+  }
+
+  const checkPincode = async () => {
+    if (isInternational || form.pincode.length !== 6) return
+    setPincodeCheck('checking')
+    try {
+      const { data } = await axios.get('/api/orders/check-pincode', { params: { pincode: form.pincode } })
+      setPincodeCheck(data)
+    } catch {
+      setPincodeCheck(null)
+    }
+  }
 
   const validateForm = () => {
     if (!form.name || !form.email || !form.phone || !form.address || !form.city || !form.pincode) {
@@ -254,7 +269,18 @@ export default function CheckoutPage() {
                     {field.label}
                   </label>
                   <input type={field.type} name={field.name} value={form[field.name]}
-                    onChange={handleChange} required className="input-field" />
+                    onChange={handleChange}
+                    onBlur={field.name === 'pincode' ? checkPincode : undefined}
+                    required className="input-field" />
+                  {field.name === 'pincode' && pincodeCheck === 'checking' && (
+                    <p className="text-xs text-cream-500 mt-1">Checking delivery availability…</p>
+                  )}
+                  {field.name === 'pincode' && pincodeCheck && pincodeCheck !== 'checking' && !pincodeCheck.skipped && !pincodeCheck.serviceable && (
+                    <p className="text-xs text-red-500 mt-1">⚠️ We may not be able to deliver to this pincode. Double-check it, or contact us before ordering.</p>
+                  )}
+                  {field.name === 'pincode' && pincodeCheck && pincodeCheck !== 'checking' && !pincodeCheck.skipped && pincodeCheck.serviceable && (
+                    <p className="text-xs text-green-600 mt-1">✓ Deliverable to this pincode</p>
+                  )}
                 </div>
               ))}
 

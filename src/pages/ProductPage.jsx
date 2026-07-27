@@ -163,15 +163,17 @@ export default function ProductPage() {
           <h1 className="font-display text-3xl md:text-4xl text-devotion-brown mb-4 leading-snug">{product.name}</h1>
 
           {/* Rating */}
-          <div className="flex items-center gap-2 mb-5">
-            <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} size={16}
-                  className={i < Math.round(product.rating || 4) ? 'text-saffron-400 fill-saffron-400' : 'text-cream-300 fill-cream-300'} />
-              ))}
+          {product.rating > 0 && (
+            <div className="flex items-center gap-2 mb-5">
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={16}
+                    className={i < Math.round(product.rating) ? 'text-saffron-400 fill-saffron-400' : 'text-cream-300 fill-cream-300'} />
+                ))}
+              </div>
+              <span className="text-sm text-cream-500">({product.reviewCount || 0} reviews)</span>
             </div>
-            <span className="text-sm text-cream-500">({product.reviewCount || 0} reviews)</span>
-          </div>
+          )}
 
           {/* Price */}
           <div className="mb-6">

@@ -1,11 +1,14 @@
 // frontend/src/components/ui/CategorySection.jsx
 // Replace the entire categories section in HomePage.jsx with this component
 
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import axios from 'axios'
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import useCategories from '../../hooks/useCategories'
+import { bestProductImage } from '../../utils/bestImage'
+import { thumbUrl } from '../../utils/image'
 
 const FEATURED_CATEGORIES = [
   {
@@ -42,6 +45,15 @@ export default function CategorySection() {
   const scrollRef = useRef(null)
   // All categories for pills row
   const ALL_CATEGORIES = useCategories().map(c => ({ label: c.name, slug: c.slug }))
+  const [images, setImages] = useState({})
+
+  useEffect(() => {
+    Promise.all(FEATURED_CATEGORIES.map(cat =>
+      axios.get(`/api/products?category=${cat.slug}&limit=8`)
+        .then(r => [cat.slug, bestProductImage(r.data.products || [])])
+        .catch(() => [cat.slug, null])
+    )).then(entries => setImages(Object.fromEntries(entries)))
+  }, [])
 
   const scroll = (dir) => {
     if (scrollRef.current) {
@@ -78,25 +90,41 @@ export default function CategorySection() {
             whileHover={{ y: -5 }}
             transition={{ duration: 0.2 }}>
             <Link to={`/shop/${cat.slug}`}
-              className="group flex flex-col bg-cream-50 border border-cream-200 hover:border-saffron-400 rounded-2xl p-6 transition-all duration-300 hover:shadow-warm h-full">
-              {/* Emoji */}
-              <motion.span
-                className="text-3xl mb-4 block"
-                whileHover={{ scale: 1.2 }}
-                transition={{ type: 'spring', stiffness: 300 }}>
-                {cat.emoji}
-              </motion.span>
+              className="group flex flex-col bg-cream-50 border border-cream-200 hover:border-saffron-400 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-warm h-full">
+              {/* Best product image for this category */}
+              <div className="relative aspect-[4/3] overflow-hidden bg-cream-200">
+                {images[cat.slug] ? (
+                  <motion.img
+                    key={images[cat.slug]}
+                    src={thumbUrl(images[cat.slug], 500)}
+                    alt={cat.label}
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="skeleton w-full h-full" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent" />
+                <motion.span
+                  className="absolute top-3 left-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-lg shadow-sm"
+                  whileHover={{ scale: 1.2 }}
+                  transition={{ type: 'spring', stiffness: 300 }}>
+                  {cat.emoji}
+                </motion.span>
+              </div>
               {/* Text */}
-              <h3 className="font-display text-base font-semibold text-devotion-brown mb-1">
-                {cat.label}
-              </h3>
-              <p className="text-xs text-cream-500 mb-3 flex-1">{cat.desc}</p>
-              {/* Count + arrow */}
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-saffron-500 font-bold">{cat.count}</span>
-                <motion.div whileHover={{ x: 4 }} transition={{ duration: 0.15 }}>
-                  <ArrowRight size={14} className="text-saffron-400 group-hover:text-saffron-600 transition-colors" />
-                </motion.div>
+              <div className="flex flex-col flex-1 p-5">
+                <h3 className="font-display text-base font-semibold text-devotion-brown mb-1">
+                  {cat.label}
+                </h3>
+                <p className="text-xs text-cream-500 mb-3 flex-1">{cat.desc}</p>
+                {/* Count + arrow */}
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-saffron-500 font-bold">{cat.count}</span>
+                  <motion.div whileHover={{ x: 4 }} transition={{ duration: 0.15 }}>
+                    <ArrowRight size={14} className="text-saffron-400 group-hover:text-saffron-600 transition-colors" />
+                  </motion.div>
+                </div>
               </div>
             </Link>
           </motion.div>
