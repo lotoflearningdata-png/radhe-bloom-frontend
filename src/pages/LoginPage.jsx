@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 import { useAuth } from '../context/AuthContext'
@@ -8,6 +8,8 @@ import { Eye, EyeOff } from 'lucide-react'
 export default function LoginPage() {
   const { login, setUserFromGoogle } = useAuth()
   const navigate   = useNavigate()
+  const [searchParams] = useSearchParams()
+  const redirectTo = searchParams.get('redirect') || '/'
   const [loading, setLoading] = useState(false)
   const [show, setShow]       = useState(false)
   const [form, setForm]       = useState({ email: '', password: '' })
@@ -22,7 +24,7 @@ export default function LoginPage() {
     try {
       await login(form.email, form.password)
       toast.success('Welcome back! 🙏')
-      navigate('/')
+      navigate(redirectTo)
     } catch (err) {
       toast.error(err.response?.data?.message || 'Login failed')
     } finally {
@@ -37,7 +39,7 @@ export default function LoginPage() {
       const { data } = await axios.post('/api/auth/google', { credential: response.credential })
       setUserFromGoogle(data.token, data.user)
       toast.success(`Welcome, ${data.user.name}! 🙏`)
-      navigate('/')
+      navigate(redirectTo)
     } catch (err) {
       toast.error(err.response?.data?.message || 'Google sign-in failed')
     } finally {

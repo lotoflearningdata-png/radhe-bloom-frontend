@@ -24,6 +24,7 @@ export default function Navbar() {
   const [search, setSearch] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [catOpen, setCatOpen] = useState(false)
+  const [mobileCatOpen, setMobileCatOpen] = useState(false)
   const catRef = useRef(null)
   const navigate = useNavigate()
   const location = useLocation()
@@ -34,7 +35,7 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handler)
   }, [])
 
-  useEffect(() => { setMenuOpen(false); setCatOpen(false) }, [location])
+  useEffect(() => { setMenuOpen(false); setCatOpen(false); setMobileCatOpen(false) }, [location])
 
   // Close category dropdown on outside click
   useEffect(() => {
@@ -204,9 +205,13 @@ export default function Navbar() {
             <Link to="/wishlist" className="block px-4 py-2.5 rounded-xl text-devotion-brown hover:bg-cream-50 hover:text-saffron-600 font-medium">
               My Wishlist {wishlistCount > 0 ? `(${wishlistCount})` : ''}
             </Link>
-            <p className="text-xs font-bold text-cream-400 uppercase tracking-wider px-4 pt-3 pb-1">Categories</p>
-            {CATEGORIES.map(cat => (
-              <Link key={cat.to} to={cat.to} className="block px-4 py-2 rounded-xl text-devotion-brown hover:bg-cream-50 hover:text-saffron-600 text-sm">
+            <button onClick={() => setMobileCatOpen(o => !o)}
+              className="flex items-center justify-between w-full px-4 py-2.5 rounded-xl text-devotion-brown hover:bg-cream-50 hover:text-saffron-600 font-medium">
+              Categories
+              <ChevronDown size={16} className={"transition-transform " + (mobileCatOpen ? 'rotate-180' : '')} />
+            </button>
+            {mobileCatOpen && CATEGORIES.map(cat => (
+              <Link key={cat.to} to={cat.to} className="block px-4 py-2 pl-8 rounded-xl text-devotion-brown hover:bg-cream-50 hover:text-saffron-600 text-sm">
                 {cat.label}
               </Link>
             ))}

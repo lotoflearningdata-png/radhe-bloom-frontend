@@ -76,6 +76,28 @@ export default function AdminOrders() {
     } catch (err) { toast.error(err.response?.data?.message || 'Failed to generate label') }
   }
 
+  const approveReturn = async (orderId) => {
+    if (!confirm('Approve this return? If already paid, a refund will be initiated automatically.')) return
+    setUpdating(orderId)
+    try {
+      const { data } = await axios.put(`/api/orders/${orderId}/approve-return`)
+      toast.success(data.refunded ? 'Return approved — refund initiated!' : 'Return approved')
+      fetchOrders()
+    } catch (err) { toast.error(err.response?.data?.message || 'Failed to approve return') }
+    finally { setUpdating(null) }
+  }
+
+  const rejectReturn = async (orderId) => {
+    if (!confirm('Reject this return request?')) return
+    setUpdating(orderId)
+    try {
+      await axios.put(`/api/orders/${orderId}/reject-return`)
+      toast.success('Return rejected')
+      fetchOrders()
+    } catch (err) { toast.error(err.response?.data?.message || 'Failed to reject return') }
+    finally { setUpdating(null) }
+  }
+
   const cancelShipment = async (orderId) => {
     if (!confirm('Cancel this Shiprocket shipment?')) return
     try {
@@ -250,6 +272,28 @@ export default function AdminOrders() {
                     )}
                     <p className="text-xs text-cream-400 mt-2">Order ID: {order._id}</p>
                   </div>
+
+                  {order.returnStatus !== 'none' && (
+                    <div className="md:col-span-3 bg-white rounded-xl p-3 border border-cream-200">
+                      <p className="text-xs font-bold text-cream-500 uppercase mb-2">Return Request</p>
+                      <p className="text-devotion-brown mb-1">
+                        Status: <span className="font-bold capitalize">{order.returnStatus}</span>
+                      </p>
+                      {order.returnReason && <p className="text-devotion-brown mb-2">Reason: {order.returnReason}</p>}
+                      {order.returnStatus === 'requested' && (
+                        <div className="flex gap-2">
+                          <button onClick={() => approveReturn(order._id)} disabled={updating === order._id}
+                            className="btn-primary text-xs px-4 py-2 disabled:opacity-50">
+                            ✅ Approve Return
+                          </button>
+                          <button onClick={() => rejectReturn(order._id)} disabled={updating === order._id}
+                            className="text-xs px-4 py-2 rounded-full border border-red-200 text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50">
+                            ✕ Reject Return
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

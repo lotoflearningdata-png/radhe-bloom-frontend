@@ -1,10 +1,12 @@
 import { Link, useParams, useSearchParams } from 'react-router-dom'
-import { CheckCircle, Package, MessageCircle } from 'lucide-react'
+import { CheckCircle, Package, MessageCircle, User } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
 
 export default function OrderSuccessPage() {
   const { id } = useParams()
   const [searchParams] = useSearchParams()
   const isInternational = searchParams.get('international') === 'true'
+  const { user } = useAuth()
 
   return (
     <div className="max-w-xl mx-auto px-4 py-24 text-center">
@@ -40,10 +42,27 @@ export default function OrderSuccessPage() {
         A confirmation email has been sent to your email address.
       </p>
 
+      {!user && (
+        <div className="bg-saffron-50 border border-saffron-200 rounded-2xl p-5 mb-6 text-center">
+          <p className="font-bold text-devotion-brown mb-1">Want to track this order?</p>
+          <p className="text-sm text-cream-600 mb-4">
+            Please login or create an account to track this and all your future orders in one place.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link to={`/login?redirect=/orders`} className="btn-primary">
+              <User size={16} /> Login
+            </Link>
+            <Link to={`/register?redirect=/orders`} className="btn-outline">Create Account</Link>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
-        <Link to="/orders" className="btn-primary">
-          <Package size={16} /> Track Order
-        </Link>
+        {user && (
+          <Link to="/orders" className="btn-primary">
+            <Package size={16} /> Track Order
+          </Link>
+        )}
         <Link to="/shop" className="btn-outline">Continue Shopping</Link>
       </div>
     </div>

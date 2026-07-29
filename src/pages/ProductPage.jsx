@@ -227,7 +227,7 @@ export default function ProductPage() {
           {/* Stock */}
           {product.stock !== undefined && (
             <p className={`text-sm font-bold mb-5 ${product.stock > 0 ? 'text-green-600' : 'text-red-500'}`}>
-              {product.stock > 0 ? `✓ In Stock (${product.stock} available)` : '✗ Out of Stock'}
+              {product.stock > 0 ? '✓ In Stock' : '✗ Out of Stock'}
             </p>
           )}
 

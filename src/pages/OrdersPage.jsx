@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import toast from 'react-hot-toast'
-import { Package, ChevronDown, ChevronUp, Globe, MapPin, FileDown } from 'lucide-react'
+import { Package, ChevronDown, ChevronUp, Globe, MapPin, FileDown, X, RotateCcw } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { thumbUrl } from '../utils/image'
 
@@ -51,6 +51,43 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true)
   const [expanded, setExpanded] = useState(null)
   const [downloading, setDownloading] = useState(null)
+  const [cancelling, setCancelling] = useState(null)
+  const [returning, setReturning] = useState(null)
+
+  const cancelOrder = async (orderId) => {
+    if (!confirm('Cancel this order? If already paid, a refund will be initiated automatically.')) return
+    setCancelling(orderId)
+    try {
+      const { data } = await axios.put(`/api/orders/${orderId}/cancel`)
+      setOrders(prev => prev.map(o => o._id === orderId ? data.order : o))
+      toast.success(data.refunded ? 'Order cancelled — refund initiated!' : 'Order cancelled')
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to cancel order')
+    } finally {
+      setCancelling(null)
+    }
+  }
+
+  const isReturnEligible = (order) =>
+    order.status === 'delivered' &&
+    order.returnStatus === 'none' &&
+    order.deliveredAt &&
+    (Date.now() - new Date(order.deliveredAt).getTime()) <= 2 * 24 * 60 * 60 * 1000
+
+  const requestReturn = async (orderId) => {
+    const reason = prompt('Why would you like to return this order? (optional)')
+    if (reason === null) return
+    setReturning(orderId)
+    try {
+      const { data } = await axios.put(`/api/orders/${orderId}/request-return`, { reason })
+      setOrders(prev => prev.map(o => o._id === orderId ? data.order : o))
+      toast.success('Return requested — we\'ll be in touch shortly!')
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to request return')
+    } finally {
+      setReturning(null)
+    }
+  }
 
   const downloadInvoice = async (orderId) => {
     setDownloading(orderId)
@@ -196,6 +233,34 @@ export default function OrdersPage() {
                       className="flex items-center gap-2 text-sm text-saffron-600 font-bold hover:underline disabled:opacity-50">
                       <FileDown size={16} /> {downloading === order._id ? 'Preparing invoice…' : 'Download Invoice'}
                     </button>
+                  )}
+
+                  {['pending', 'confirmed', 'processing'].includes(order.status) && (
+                    <button onClick={() => cancelOrder(order._id)} disabled={cancelling === order._id}
+                      className="flex items-center gap-2 text-sm text-red-500 font-bold hover:underline disabled:opacity-50">
+                      <X size={16} /> {cancelling === order._id ? 'Cancelling…' : 'Cancel Order'}
+                    </button>
+                  )}
+
+                  {isReturnEligible(order) && (
+                    <button onClick={() => requestReturn(order._id)} disabled={returning === order._id}
+                      className="flex items-center gap-2 text-sm text-saffron-600 font-bold hover:underline disabled:opacity-50">
+                      <RotateCcw size={16} /> {returning === order._id ? 'Submitting…' : 'Return Order (within 2 days)'}
+                    </button>
+                  )}
+
+                  {order.returnStatus !== 'none' && (
+                    <p className={"text-xs font-bold px-3 py-1.5 rounded-full inline-block capitalize " + (
+                      order.returnStatus === 'approved' ? 'bg-green-100 text-green-700' :
+                      order.returnStatus === 'rejected' ? 'bg-red-100 text-red-500' :
+                      'bg-yellow-100 text-yellow-700'
+                    )}>
+                      Return {order.returnStatus}
+                    </p>
+                  )}
+
+                  {order.status === 'delivered' && order.returnStatus === 'none' && !isReturnEligible(order) && (
+                    <p className="text-xs text-cream-400">Return window has closed for this order</p>
                   )}
 
                   <a href={`https://wa.me/message/XNZVRD2CYFWPG1?text=Hi%2C%20my%20order%20ID%20is%20${order._id}`}

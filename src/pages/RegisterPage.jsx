@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 import { useAuth } from '../context/AuthContext'
@@ -8,6 +8,8 @@ import { Eye, EyeOff } from 'lucide-react'
 export default function RegisterPage() {
   const { register, setUserFromGoogle } = useAuth()
   const navigate   = useNavigate()
+  const [searchParams] = useSearchParams()
+  const redirectTo = searchParams.get('redirect') || '/'
   const [loading, setLoading] = useState(false)
   const [show, setShow]       = useState(false)
   const [form, setForm]       = useState({ name: '', email: '', password: '' })
@@ -24,7 +26,7 @@ export default function RegisterPage() {
     try {
       await register(form.name, form.email, form.password)
       toast.success('Account created! Check your inbox to verify your email', { duration: 6000 })
-      navigate('/')
+      navigate(redirectTo)
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed')
     } finally {
@@ -39,7 +41,7 @@ export default function RegisterPage() {
       const { data } = await axios.post('/api/auth/google', { credential: response.credential })
       setUserFromGoogle(data.token, data.user)
       toast.success(`Welcome, ${data.user.name}!`)
-      navigate('/')
+      navigate(redirectTo)
     } catch (err) {
       toast.error(err.response?.data?.message || 'Google sign-in failed')
     } finally {
