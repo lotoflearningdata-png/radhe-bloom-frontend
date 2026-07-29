@@ -80,6 +80,14 @@ export default function ProductPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
+      <SEO
+        title={product.name}
+        description={product.description ? product.description.slice(0, 160) : `Buy ${product.name} online from Radhe Bloom — handcrafted devotional décor, delivered across India.`}
+        image={images[0]}
+        url={`https://radhebloom.in/product/${product._id}`}
+        type="product"
+        product={product}
+      />
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-cream-500 mb-8">
         <Link to="/" className="hover:text-saffron-600 transition-colors">Home</Link>
