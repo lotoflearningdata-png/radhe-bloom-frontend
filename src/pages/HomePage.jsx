@@ -178,6 +178,23 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── FIRST 50 ORDERS OFFER ── */}
+      <motion.section
+        className="relative overflow-hidden"
+        style={{ background: 'linear-gradient(90deg, #C9960A, #E0B84A, #C9960A)' }}
+        initial={{ opacity: 0, y: -10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
+        <div className="max-w-7xl mx-auto px-4 py-3.5 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-center">
+          <motion.span className="text-2xl"
+            animate={{ rotate: [0, -10, 10, 0] }} transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}>
+            🎁
+          </motion.span>
+          <p className="text-white text-sm sm:text-base leading-snug">
+            <span className="font-bold">First 50 orders get a FREE surprise gift</span>
+            <span className="text-white/90"> — on top of the 10% off already applied to every product.</span>
+          </p>
+        </div>
+      </motion.section>
+
       {/* ── TRUST BAR ──
       <motion.section className="bg-white border-y border-cream-200"
         initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
