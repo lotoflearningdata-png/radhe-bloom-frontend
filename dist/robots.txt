@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /cart
+Disallow: /checkout
+Disallow: /dashboard
+Disallow: /orders
+Disallow: /login
+Disallow: /register
+
+Sitemap: https://radhebloom.in/api/products/sitemap.xml

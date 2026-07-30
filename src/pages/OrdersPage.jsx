@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import toast from 'react-hot-toast'
-import { Package, ChevronDown, ChevronUp, Globe, MapPin, FileDown, X, RotateCcw } from 'lucide-react'
+import { Package, ChevronDown, ChevronUp, Globe, MapPin, FileDown, X, RotateCcw, Truck } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { thumbUrl } from '../utils/image'
 
@@ -53,6 +53,8 @@ export default function OrdersPage() {
   const [downloading, setDownloading] = useState(null)
   const [cancelling, setCancelling] = useState(null)
   const [returning, setReturning] = useState(null)
+  const [tracking, setTracking] = useState({})
+  const [trackingLoading, setTrackingLoading] = useState(null)
 
   const cancelOrder = async (orderId) => {
     if (!confirm('Cancel this order? If already paid, a refund will be initiated automatically.')) return
@@ -86,6 +88,19 @@ export default function OrdersPage() {
       toast.error(err.response?.data?.message || 'Failed to request return')
     } finally {
       setReturning(null)
+    }
+  }
+
+  const trackShipment = async (orderId) => {
+    setTrackingLoading(orderId)
+    try {
+      const { data } = await axios.get(`/api/orders/${orderId}/tracking`)
+      setTracking(prev => ({ ...prev, [orderId]: data.trackingData || { empty: true } }))
+      if (!data.trackingData) toast('No live tracking updates yet — check back soon.')
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Could not fetch tracking info')
+    } finally {
+      setTrackingLoading(null)
     }
   }
 
@@ -200,9 +215,32 @@ export default function OrdersPage() {
                   {/* Tracking */}
                   {order.awbCode && (
                     <div className="bg-white rounded-xl p-3">
-                      <p className="text-xs font-bold text-devotion-brown/70 uppercase mb-2">Tracking</p>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs font-bold text-devotion-brown/70 uppercase">Tracking</p>
+                        <button onClick={() => trackShipment(order._id)} disabled={trackingLoading === order._id}
+                          className="flex items-center gap-1 text-xs text-saffron-600 font-bold hover:underline disabled:opacity-50">
+                          <Truck size={14} /> {trackingLoading === order._id ? 'Fetching…' : 'Track Shipment'}
+                        </button>
+                      </div>
                       <p className="text-sm"><span className="text-cream-500">AWB:</span> <span className="font-bold">{order.awbCode}</span></p>
                       {order.courierName && <p className="text-sm"><span className="text-cream-500">Courier:</span> {order.courierName}</p>}
+
+                      {tracking[order._id] && !tracking[order._id].empty && (
+                        <div className="mt-3 pt-3 border-t border-cream-100 space-y-2">
+                          {(tracking[order._id].shipment_track_activities || []).map((event, i) => (
+                            <div key={i} className="text-xs flex gap-2">
+                              <span className="text-cream-400 whitespace-nowrap">{event.date}</span>
+                              <span className="text-devotion-brown">
+                                <span className="font-bold">{event.status || event.activity}</span>
+                                {event.location ? ` — ${event.location}` : ''}
+                              </span>
+                            </div>
+                          ))}
+                          {!(tracking[order._id].shipment_track_activities || []).length && (
+                            <p className="text-xs text-cream-400">No tracking updates yet.</p>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
 
