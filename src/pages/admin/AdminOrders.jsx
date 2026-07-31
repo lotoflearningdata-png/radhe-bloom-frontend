@@ -98,6 +98,20 @@ export default function AdminOrders() {
     finally { setUpdating(null) }
   }
 
+  const setManualTracking = async (orderId, currentCourier) => {
+    const courierName = prompt('Courier name:', currentCourier || 'India Post')
+    if (!courierName) return
+    const trackingId = prompt('Tracking / Consignment ID:')
+    if (!trackingId) return
+    setUpdating(orderId)
+    try {
+      await axios.put(`/api/orders/${orderId}/manual-tracking`, { courierName, trackingId })
+      toast.success('Tracking updated — customer notified')
+      fetchOrders()
+    } catch (err) { toast.error(err.response?.data?.message || 'Failed to update tracking') }
+    finally { setUpdating(null) }
+  }
+
   const cancelShipment = async (orderId) => {
     if (!confirm('Cancel this Shiprocket shipment?')) return
     try {
@@ -175,9 +189,10 @@ export default function AdminOrders() {
                     value={order.status}
                     onChange={e => updateStatus(order._id, e.target.value)}
                     disabled={updating === order._id}
-                    className={`appearance-none w-full text-xs font-bold px-3 py-1.5 rounded-full cursor-pointer border-0 outline-none ${STATUS_COLORS[order.status]}`}>
+                    className={`appearance-none w-full text-xs font-bold pl-3 pr-7 py-1.5 rounded-full cursor-pointer border-0 outline-none ${STATUS_COLORS[order.status]}`}>
                     {STATUSES.filter(s => s !== 'all').map(s => <option key={s} value={s} className="bg-white text-gray-800">{s}</option>)}
                   </select>
+                  <ChevronDown size={14} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 opacity-60" />
                 </div>
 
                 {/* Date */}
@@ -231,7 +246,7 @@ export default function AdminOrders() {
                         {order.awbCode && (
                           <div>
                             <p className="text-devotion-brown">AWB: <span className="font-bold">{order.awbCode}</span></p>
-                            <p className="text-devotion-brown">Courier: {order.courierName}</p>
+                            <p className="text-devotion-brown">Courier: {order.courierName}{order.manualTracking ? ' (manual)' : ''}</p>
                           </div>
                         )}
 
@@ -262,6 +277,10 @@ export default function AdminOrders() {
                                 ✕ Cancel Shipment
                               </button>
                             )}
+                            <button onClick={() => setManualTracking(order._id, order.courierName)} disabled={updating === order._id}
+                              className="btn-outline text-xs px-3 py-1.5 disabled:opacity-50">
+                              📮 {order.manualTracking ? 'Edit' : 'Enter'} Manual Tracking
+                            </button>
                           </div>
                         )}
 

@@ -217,10 +217,19 @@ export default function OrdersPage() {
                     <div className="bg-white rounded-xl p-3">
                       <div className="flex items-center justify-between mb-2">
                         <p className="text-xs font-bold text-devotion-brown/70 uppercase">Tracking</p>
-                        <button onClick={() => trackShipment(order._id)} disabled={trackingLoading === order._id}
-                          className="flex items-center gap-1 text-xs text-saffron-600 font-bold hover:underline disabled:opacity-50">
-                          <Truck size={14} /> {trackingLoading === order._id ? 'Fetching…' : 'Track Shipment'}
-                        </button>
+                        {order.manualTracking ? (
+                          order.trackingUrl && (
+                            <a href={order.trackingUrl} target="_blank" rel="noreferrer"
+                              className="flex items-center gap-1 text-xs text-saffron-600 font-bold hover:underline">
+                              <Truck size={14} /> Track on {order.courierName}
+                            </a>
+                          )
+                        ) : (
+                          <button onClick={() => trackShipment(order._id)} disabled={trackingLoading === order._id}
+                            className="flex items-center gap-1 text-xs text-saffron-600 font-bold hover:underline disabled:opacity-50">
+                            <Truck size={14} /> {trackingLoading === order._id ? 'Fetching…' : 'Track Shipment'}
+                          </button>
+                        )}
                       </div>
                       <p className="text-sm"><span className="text-cream-500">AWB:</span> <span className="font-bold">{order.awbCode}</span></p>
                       {order.courierName && <p className="text-sm"><span className="text-cream-500">Courier:</span> {order.courierName}</p>}
