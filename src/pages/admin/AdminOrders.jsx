@@ -236,13 +236,14 @@ export default function AdminOrders() {
                         className="btn-primary text-xs px-4 py-2">
                         ✅ Confirm Payoneer Payment
                       </button>
-                    ) : order.paymentMethod === 'cod' && order.paymentStatus !== 'paid' ? (
-                      <button onClick={() => confirmCOD(order._id)}
-                        className="btn-primary text-xs px-4 py-2">
-                        ✅ Mark Cash Collected
-                      </button>
                     ) : (
                       <div className="space-y-2">
+                        {order.paymentMethod === 'cod' && order.paymentStatus !== 'paid' && (
+                          <button onClick={() => confirmCOD(order._id)}
+                            className="btn-primary text-xs px-4 py-2">
+                            ✅ Mark Cash Collected
+                          </button>
+                        )}
                         {order.awbCode && (
                           <div>
                             <p className="text-devotion-brown">AWB: <span className="font-bold">{order.awbCode}</span></p>
