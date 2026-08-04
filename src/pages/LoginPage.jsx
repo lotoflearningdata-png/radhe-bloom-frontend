@@ -4,6 +4,7 @@ import toast from 'react-hot-toast'
 import axios from 'axios'
 import { useAuth } from '../context/AuthContext'
 import { Eye, EyeOff } from 'lucide-react'
+import SEO from '../components/ui/SEO'
 
 export default function LoginPage() {
   const { login, setUserFromGoogle } = useAuth()
@@ -64,6 +65,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-cream-gradient flex items-center justify-center px-4 py-16">
+      <SEO title="Login" noindex />
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">

@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import SEO from '../components/ui/SEO'
 
 const LAST_UPDATED = 'April 14, 2026'
 
@@ -8,6 +9,7 @@ export default function ShippingPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
+      <SEO title="Shipping & Returns" description="Radhe Bloom shipping timelines, charges and our 24–48 hour hassle-free returns policy." />
       {/* Header */}
       <div className="bg-devotion-dark rounded-3xl p-10 mb-10 text-center">
         <p className="text-saffron-400 text-xs uppercase tracking-widest font-bold mb-3">🚚 Legal</p>

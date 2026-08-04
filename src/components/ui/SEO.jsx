@@ -4,23 +4,27 @@ const DEFAULT = {
   title:       'Radhe Bloom – Divine Creations & Sacred Gifts',
   description: 'Handcrafted Krishna idols, MDF cutouts, devotional gifts & toys. Serving retail & wholesale with love. Free shipping above ₹999.',
   image:       'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png',
-  url:         'https://radhebloom.in',
+  url:         'https://www.radhebloom.com',
 }
 
-export default function SEO({ title, description, image, url, type = 'website', product }) {
+export default function SEO({ title, description, image, url, type = 'website', product, noindex = false }) {
   const fullTitle  = title ? `${title} | Radhe Bloom` : DEFAULT.title
   const fullDesc   = description || DEFAULT.description
   const fullImage  = image || DEFAULT.image
   const fullUrl    = url || DEFAULT.url
+  const gscCode    = import.meta.env.VITE_GSC_VERIFICATION
 
   return (
     <Helmet>
       {/* Basic */}
       <title>{fullTitle}</title>
       <meta name="description" content={fullDesc} />
-      <meta name="keywords" content="radhe bloom, krishna idol, radha krishna, MDF cutout, devotional gifts, janmashtami, navratri, hindu idol, handcrafted, wholesale" />
+      {noindex
+        ? <meta name="robots" content="noindex, nofollow" />
+        : <meta name="keywords" content="radhe bloom, krishna idol, radha krishna, MDF cutout, devotional gifts, janmashtami, navratri, hindu idol, handcrafted, wholesale" />}
       <meta name="author" content="Radhe Bloom" />
       <link rel="canonical" href={fullUrl} />
+      {gscCode && <meta name="google-site-verification" content={gscCode} />}
 
       {/* Open Graph (Facebook, WhatsApp) */}
       <meta property="og:type"        content={type} />
@@ -69,7 +73,7 @@ export default function SEO({ title, description, image, url, type = 'website', 
           '@context': 'https://schema.org',
           '@type':    'OnlineStore',
           name:       'Radhe Bloom',
-          url:        'https://radhebloom.in',
+          url:        'https://www.radhebloom.com',
           logo:       DEFAULT.image,
           description: DEFAULT.description,
           address: {

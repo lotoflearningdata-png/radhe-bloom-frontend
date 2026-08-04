@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, Phone, Mail, Sparkles } from 'lucide-react'
+import SEO from '../components/ui/SEO'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -19,6 +20,7 @@ const VALUES = [
 export default function AboutPage() {
   return (
     <div className="bg-[#FDFAF4]">
+      <SEO title="About Us" description="Discover the story behind Radhe Bloom — handcrafted Krishna idols, MDF cutouts and devotional décor blending spiritual heritage with modern craftsmanship." />
       {/* ── HERO ── */}
       <section className="relative bg-[#3D2B1F] py-20 overflow-hidden">
         <div className="absolute inset-0 opacity-10 pointer-events-none"

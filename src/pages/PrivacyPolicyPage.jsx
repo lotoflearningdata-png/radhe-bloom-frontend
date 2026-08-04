@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import SEO from '../components/ui/SEO'
 
 const LAST_UPDATED = 'April 14, 2026'
 
@@ -8,6 +9,7 @@ export default function PrivacyPolicyPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
+      <SEO title="Privacy Policy" description="Read Radhe Bloom's privacy policy to learn how we collect, use and protect your personal information." />
       {/* Header */}
       <div className="bg-devotion-dark rounded-3xl p-10 mb-10 text-center">
         <p className="text-saffron-400 text-xs uppercase tracking-widest font-bold mb-3">🔒 Legal</p>
@@ -23,7 +25,7 @@ export default function PrivacyPolicyPage() {
             At <strong className="text-devotion-brown">Radhe Bloom</strong> ("we", "us", or "our"), operated from
             Kichha, Uttarakhand, India, we are committed to protecting your personal information and your
             right to privacy. This Privacy Policy explains how we collect, use, and safeguard your information
-            when you visit our website radhebloom.in and make purchases from us.
+            when you visit our website radhebloom.com and make purchases from us.
           </p>
           <p className="mt-3">
             By using our website, you agree to the collection and use of information in accordance with this policy.

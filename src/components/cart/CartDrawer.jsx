@@ -46,6 +46,7 @@ export default function CartDrawer() {
                 <img
                   src={thumbUrl(item.product.images?.[0] || 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png', 200)}
                   alt={item.product.name}
+                  loading="lazy"
                   className="w-20 h-20 object-cover rounded-xl bg-cream-100"
                   onError={e => { e.target.src = 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png' }}
                 />

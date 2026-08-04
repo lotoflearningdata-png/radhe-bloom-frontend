@@ -147,14 +147,16 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: -15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
                 <Sparkles size={12} /> {s.tag}
               </motion.span>
-              <motion.h1 className="font-display text-6xl md:text-7xl text-white leading-none mb-2"
-                initial={{ opacity: 0, y: 25 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-                {s.title}
-              </motion.h1>
-              <motion.h1 className="font-display text-6xl md:text-7xl text-saffron-400 leading-none mb-6 italic"
-                initial={{ opacity: 0, y: 25 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-                {s.sub}
-              </motion.h1>
+              <h1 className="leading-none">
+                <motion.span className="block font-display text-6xl md:text-7xl text-white mb-2"
+                  initial={{ opacity: 0, y: 25 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+                  {s.title}
+                </motion.span>
+                <motion.span className="block font-display text-6xl md:text-7xl text-saffron-400 mb-6 italic"
+                  initial={{ opacity: 0, y: 25 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+                  {s.sub}
+                </motion.span>
+              </h1>
               <motion.p className="text-cream-200 text-lg mb-8 max-w-lg"
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }}>
                 {s.desc}

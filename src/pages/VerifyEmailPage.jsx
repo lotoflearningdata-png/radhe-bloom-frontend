@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import axios from 'axios'
 import { useAuth } from '../context/AuthContext'
 import { CheckCircle, XCircle, Loader } from 'lucide-react'
+import SEO from '../components/ui/SEO'
 
 export default function VerifyEmailPage() {
   const { token } = useParams()
@@ -41,6 +42,7 @@ export default function VerifyEmailPage() {
 
   return (
     <div className="min-h-screen bg-cream-gradient flex items-center justify-center px-4 py-16">
+      <SEO title="Verify Email" noindex />
       <div className="w-full max-w-md">
         <div className="bg-white rounded-3xl p-8 shadow-warm text-center">
           {status === 'verifying' && (

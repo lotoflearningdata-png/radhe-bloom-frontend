@@ -8,6 +8,7 @@ import { useCurrency } from '../context/CurrencyContext'
 import CouponInput from '../components/checkout/CouponInput'
 import { thumbUrl } from '../utils/image'
 import { Lock, ArrowRight, Globe, MapPin, Banknote } from 'lucide-react'
+import SEO from '../components/ui/SEO'
 
 const INDIAN_STATES = [
   'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh',
@@ -204,6 +205,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-12">
+      <SEO title="Checkout" noindex />
       <h1 className="section-title mb-8">Checkout</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -357,8 +359,8 @@ export default function CheckoutPage() {
             <div className="space-y-3 mb-5 max-h-56 overflow-y-auto">
               {cart.map(item => (
                 <div key={item.product._id + (item.color || '') + (item.size || '')} className="flex gap-3 items-center">
-                  <img src={thumbUrl(item.product.images?.[0] || 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png', 200)}
-                    alt="" className="w-12 h-12 rounded-lg object-cover bg-cream-100" />
+                  <img loading="lazy" src={thumbUrl(item.product.images?.[0] || 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png', 200)}
+                    alt={item.product.name} className="w-12 h-12 rounded-lg object-cover bg-cream-100" />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-bold text-devotion-brown line-clamp-1">{item.product.name}</p>
                     <p className="text-xs text-cream-500">{[item.color, item.size].filter(Boolean).join(', ')}{(item.color || item.size) ? ' · ' : ''}×{item.qty}</p>

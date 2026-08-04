@@ -56,6 +56,7 @@ export default function ProductCard({ product, index = 0 }) {
           <img
             src={thumbUrl(product.images?.[0] || 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png')}
             alt={product.name}
+            loading="lazy"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
           {/* Discount badge */}

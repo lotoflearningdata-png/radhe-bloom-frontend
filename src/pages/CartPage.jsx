@@ -3,6 +3,7 @@ import { Trash2, ArrowRight } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useCurrency } from '../context/CurrencyContext'
 import { thumbUrl } from '../utils/image'
+import SEO from '../components/ui/SEO'
 
 export default function CartPage() {
   const { cart, removeFromCart, updateQty, cartTotal } = useCart()
@@ -10,6 +11,7 @@ export default function CartPage() {
 
   if (cart.length === 0) return (
     <div className="max-w-2xl mx-auto px-4 py-32 text-center">
+      <SEO title="Your Cart" noindex />
       <div className="text-7xl mb-6">🛕</div>
       <h2 className="font-display text-3xl text-devotion-brown mb-3">Your cart is empty</h2>
       <p className="text-cream-500 mb-8">Add some divine pieces to your collection</p>
@@ -19,13 +21,14 @@ export default function CartPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-12">
+      <SEO title="Your Cart" noindex />
       <h1 className="section-title mb-8">Your Cart</h1>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-4">
           {cart.map(item => (
             <div key={item.product._id + (item.color || '') + (item.size || '')} className="bg-white rounded-2xl p-4 flex gap-4 shadow-card">
               <img src={thumbUrl(item.product.images?.[0] || 'https://via.placeholder.com/400', 200)}
-                alt={item.product.name} className="w-24 h-24 rounded-xl object-cover bg-cream-100" />
+                alt={item.product.name} loading="lazy" className="w-24 h-24 rounded-xl object-cover bg-cream-100" />
               <div className="flex-1">
                 <Link to={`/product/${item.product._id}`}
                   className="font-display text-devotion-brown hover:text-saffron-700 transition-colors leading-snug block mb-1">

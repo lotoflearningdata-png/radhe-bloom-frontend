@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import SEO from '../components/ui/SEO'
 
 const LAST_UPDATED = 'April 14, 2026'
 
@@ -8,6 +9,7 @@ export default function TermsPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
+      <SEO title="Terms & Conditions" description="Read the terms and conditions for shopping with Radhe Bloom, covering orders, payments, wholesale and site usage." />
       {/* Header */}
       <div className="bg-devotion-dark rounded-3xl p-10 mb-10 text-center">
         <p className="text-saffron-400 text-xs uppercase tracking-widest font-bold mb-3">📋 Legal</p>
@@ -20,7 +22,7 @@ export default function TermsPage() {
         <div>
           <p>
             Welcome to <strong className="text-devotion-brown">Radhe Bloom</strong>. By accessing or using our website
-            radhebloom.in and purchasing our products, you agree to be bound by these Terms & Conditions.
+            radhebloom.com and purchasing our products, you agree to be bound by these Terms & Conditions.
             Please read them carefully before making a purchase.
           </p>
           <p className="mt-3">
@@ -108,7 +110,7 @@ export default function TermsPage() {
 
         <Section title="7. Intellectual Property">
           <p>
-            All content on radhebloom.in — including product photos, descriptions, logo, designs and website code —
+            All content on radhebloom.com — including product photos, descriptions, logo, designs and website code —
             is the exclusive property of Radhe Bloom. You may not copy, reproduce, distribute or use
             our content without prior written permission.
           </p>

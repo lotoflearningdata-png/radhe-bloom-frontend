@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 import { Package, ChevronDown, ChevronUp, Globe, MapPin, FileDown, X, RotateCcw, Truck } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { thumbUrl } from '../utils/image'
+import SEO from '../components/ui/SEO'
 
 const STATUS_COLORS = {
   pending:    'bg-yellow-100 text-yellow-700',
@@ -138,6 +139,7 @@ export default function OrdersPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
+      <SEO title="My Orders" noindex />
       <h1 className="section-title mb-8">My Orders</h1>
 
       {loading ? (
@@ -175,8 +177,9 @@ export default function OrdersPage() {
                 <div className="flex gap-2 mb-3">
                   {order.items?.slice(0, 4).map((item, i) => (
                     <img key={i}
+                      loading="lazy"
                       src={thumbUrl(item.product?.images?.[0] || 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png', 200)}
-                      alt="" className="w-12 h-12 rounded-lg object-cover bg-cream-100" />
+                      alt={item.product?.name || 'Order item'} className="w-12 h-12 rounded-lg object-cover bg-cream-100" />
                   ))}
                   {order.items?.length > 4 && (
                     <div className="w-12 h-12 rounded-lg bg-cream-100 flex items-center justify-center text-xs text-cream-500 font-bold">

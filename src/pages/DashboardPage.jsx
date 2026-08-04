@@ -4,6 +4,7 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 import { User, Package, Edit, Save, X } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import SEO from '../components/ui/SEO'
 
 export default function DashboardPage() {
   const { user, login } = useAuth()
@@ -47,6 +48,7 @@ export default function DashboardPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-12">
+      <SEO title="My Account" noindex />
       <div className="flex items-center gap-4 mb-8">
         <div className="w-16 h-16 rounded-full bg-saffron-100 flex items-center justify-center text-saffron-600 font-display text-2xl font-bold">
           {user.name?.[0]?.toUpperCase()}
@@ -99,7 +101,7 @@ export default function DashboardPage() {
                 {order.items?.slice(0, 4).map((item, i) => (
                   <img key={i}
                     src={item.product?.images?.[0] || 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png'}
-                    alt="" className="w-12 h-12 rounded-lg object-cover bg-cream-100" />
+                    alt={item.product?.name || 'Order item'} loading="lazy" className="w-12 h-12 rounded-lg object-cover bg-cream-100" />
                 ))}
               </div>
               {order.awbCode && (

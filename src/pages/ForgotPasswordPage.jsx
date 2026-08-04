@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import { Mail, CheckCircle, ArrowLeft } from 'lucide-react'
+import SEO from '../components/ui/SEO'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail]     = useState('')
@@ -25,6 +26,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen bg-cream-gradient flex items-center justify-center px-4 py-16">
+      <SEO title="Forgot Password" noindex />
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">

@@ -8,4 +8,4 @@ Disallow: /orders
 Disallow: /login
 Disallow: /register
 
-Sitemap: https://radhebloom.in/api/products/sitemap.xml
+Sitemap: https://www.radhebloom.com/api/products/sitemap.xml

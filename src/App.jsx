@@ -1,4 +1,6 @@
-import { Routes, Route } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Routes, Route, useLocation } from 'react-router-dom'
+import { initAnalytics, trackPageview } from './utils/analytics'
 import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
 import { WishlistProvider } from './context/WishlistContext'
@@ -33,12 +35,22 @@ import ResetPasswordPage from './pages/ResetPasswordPage'
 import VerifyEmailPage from './pages/VerifyEmailPage'
 import WishlistPage from './pages/WishlistPage'
 
+function AnalyticsTracker() {
+  const location = useLocation()
+
+  useEffect(() => { initAnalytics() }, [])
+  useEffect(() => { trackPageview(location.pathname + location.search) }, [location])
+
+  return null
+}
+
 export default function App() {
   return (
     <AuthProvider>
       <CartProvider>
         <WishlistProvider>
         <CurrencyProvider>
+          <AnalyticsTracker />
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<HomePage />} />

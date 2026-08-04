@@ -98,6 +98,7 @@ export default function CategorySection() {
                     key={images[cat.slug]}
                     src={thumbUrl(images[cat.slug], 500)}
                     alt={cat.label}
+                    loading="lazy"
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />

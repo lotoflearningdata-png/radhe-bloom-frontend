@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import { Eye, EyeOff, CheckCircle, XCircle } from 'lucide-react'
+import SEO from '../components/ui/SEO'
 
 export default function ResetPasswordPage() {
   const { token } = useParams()
@@ -41,6 +42,7 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="min-h-screen bg-cream-gradient flex items-center justify-center px-4 py-16">
+      <SEO title="Reset Password" noindex />
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/">

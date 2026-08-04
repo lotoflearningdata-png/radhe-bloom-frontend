@@ -84,7 +84,7 @@ export default function ProductPage() {
         title={product.name}
         description={product.description ? product.description.slice(0, 160) : `Buy ${product.name} online from Radhe Bloom — handcrafted devotional décor, delivered across India.`}
         image={images[0]}
-        url={`https://radhebloom.in/product/${product._id}`}
+        url={`https://www.radhebloom.com/product/${product._id}`}
         type="product"
         product={product}
       />
@@ -158,7 +158,7 @@ export default function ProductPage() {
               {images.map((img, i) => (
                 <button key={i} onClick={() => { setImgIdx(i); setShowVideo(false) }}
                   className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${!showVideo && i === imgIdx ? 'border-saffron-400 shadow-warm' : 'border-cream-200 hover:border-saffron-200'}`}>
-                  <img src={thumbUrl(img, 200)} alt="" className="w-full h-full object-cover" />
+                  <img src={thumbUrl(img, 200)} alt={`${product.name} thumbnail ${i + 1}`} loading="lazy" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

@@ -1,6 +1,7 @@
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { CheckCircle, Package, MessageCircle, User } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import SEO from '../components/ui/SEO'
 
 export default function OrderSuccessPage() {
   const { id } = useParams()
@@ -10,6 +11,7 @@ export default function OrderSuccessPage() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-24 text-center">
+      <SEO title="Order Confirmed" noindex />
       <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
         <CheckCircle className="text-green-500" size={40} />
       </div>
