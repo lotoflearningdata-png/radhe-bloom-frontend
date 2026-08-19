@@ -6,8 +6,8 @@ import { ShoppingBag, ArrowLeft, Star, Package, Ruler, Palette, ChevronLeft, Che
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
 import SEO from '../components/ui/SEO'
-import ProductCard from '../components/ui/ProductCard-currency'
-import { useCurrency } from '../context/CurrencyContext'
+import ProductCard from '../components/ui/ProductCard-geo'
+import { useCountry } from '../context/CountryContext'
 import { thumbUrl, detailUrl } from '../utils/image'
 
 export default function ProductPage() {
@@ -23,7 +23,16 @@ export default function ProductPage() {
   const [selectedColor, setSelectedColor] = useState(null)
   const [selectedSize, setSelectedSize] = useState(null)
   const [lightbox, setLightbox] = useState({ open: false, zoomed: false, x: 50, y: 50 })
-  const { formatPrice, currency } = useCurrency()
+  const { formatPrice, country } = useCountry()
+  const [countryPrices, setCountryPrices] = useState(null)
+
+  // Fetch admin-set country prices for non-India visitors
+  useEffect(() => {
+    if (!product || country.code === 'IN') return
+    axios.get(`/api/pricing/product/${product._id}`)
+      .then(r => setCountryPrices(r.data.pricing?.prices || {}))
+      .catch(() => setCountryPrices({}))
+  }, [product?._id, country.code])
 
   useEffect(() => {
     if (!lightbox.open) return
@@ -187,9 +196,11 @@ export default function ProductPage() {
           <div className="mb-6">
             <div className="flex items-end gap-3">
               <span className="font-display text-4xl text-devotion-brown font-bold">
-                {hasSizes && !selectedVariant ? `From ${formatPrice(Math.min(...product.sizeVariants.map(v => v.price)))}` : formatPrice(displayPrice)}
+                {hasSizes && !selectedVariant
+                  ? `From ${formatPrice(Math.min(...product.sizeVariants.map(v => v.price)), {})}`
+                  : formatPrice(displayPrice, selectedVariant ? {} : countryPrices)}
               </span>
-              {!hasSizes && product.originalPrice && (
+              {!hasSizes && product.originalPrice && country.code === 'IN' && (
                 <>
                   <span className="text-cream-400 line-through text-xl mb-1">{formatPrice(product.originalPrice)}</span>
                   <span className="bg-saffron-100 text-saffron-700 text-sm font-bold px-3 py-1 rounded-full mb-1">Save {discount}%</span>
@@ -198,7 +209,7 @@ export default function ProductPage() {
             </div>
 
             {/* USD disclaimer */}
-            {currency === 'USD' && (
+            {country.code !== 'IN' && (
               <p className="text-xs text-cream-500 mt-1">
                 * Displayed in USD for reference. Payment processed in INR via Razorpay.
               </p>
@@ -266,7 +277,7 @@ export default function ProductPage() {
                         ? 'bg-saffron-500 border-saffron-500 text-white shadow-warm'
                         : 'border-cream-200 text-devotion-brown hover:border-saffron-300'
                     )}>
-                    {s.label} <span className={selectedSize === s.label ? 'text-white/80' : 'text-cream-500'}>· {formatPrice(s.price)}</span>
+                    {s.label} <span className={selectedSize === s.label ? 'text-white/80' : 'text-cream-500'}>· {formatPrice(s.price, {})}</span>
                   </button>
                 ))}
               </div>

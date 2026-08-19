@@ -5,11 +5,10 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Volume2, VolumeX, X, ShoppingBag } from 'lucide-react'
-import { useCurrency } from '../../context/CurrencyContext'
+import { useGeoCartPricing } from '../../hooks/useGeoCartPricing'
 
-function ReelCard({ product, index, onOpen }) {
+function ReelCard({ product, index, onOpen, priceLabel }) {
   const videoRef = useRef(null)
-  const { formatPrice } = useCurrency()
 
   useEffect(() => {
     const el = videoRef.current
@@ -47,7 +46,7 @@ function ReelCard({ product, index, onOpen }) {
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/20 pointer-events-none" />
       <div className="absolute bottom-0 left-0 right-0 p-3">
         <p className="text-white text-xs font-bold line-clamp-2 mb-1">{product.name}</p>
-        <p className="text-saffron-400 text-xs font-display font-bold">{formatPrice(product.price)}</p>
+        <p className="text-saffron-400 text-xs font-display font-bold">{priceLabel}</p>
       </div>
     </motion.button>
   )
@@ -60,7 +59,8 @@ export default function ShortsSection() {
   const [muted, setMuted] = useState(false)
   const scrollRef = useRef(null)
   const modalVideoRef = useRef(null)
-  const { formatPrice } = useCurrency()
+  const { fmt, unitPrice } = useGeoCartPricing(products.map(p => ({ product: p, qty: 1 })))
+  const priceLabel = (p) => fmt(unitPrice({ product: p }))
 
   useEffect(() => {
     axios.get('/api/products?hasVideo=true&limit=12')
@@ -142,7 +142,7 @@ export default function ShortsSection() {
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {products.map((p, i) => (
               <div key={p._id} className="snap-start">
-                <ReelCard product={p} index={i} onOpen={setActiveIdx} />
+                <ReelCard product={p} index={i} onOpen={setActiveIdx} priceLabel={priceLabel(p)} />
               </div>
             ))}
           </div>
@@ -204,7 +204,7 @@ export default function ShortsSection() {
 
             <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black/90 to-transparent">
               <p className="text-white font-bold text-sm mb-1 line-clamp-2">{active.name}</p>
-              <p className="text-saffron-400 font-display font-bold text-lg mb-3">{formatPrice(active.price)}</p>
+              <p className="text-saffron-400 font-display font-bold text-lg mb-3">{priceLabel(active)}</p>
               <Link
                 to={`/product/${active._id}`}
                 onClick={closeModal}

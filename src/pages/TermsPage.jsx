@@ -67,7 +67,7 @@ export default function TermsPage() {
           <ul className="list-disc pl-6 space-y-2">
             <li>All prices are listed in Indian Rupees (₹) and are inclusive of applicable taxes.</li>
             <li>International orders are priced in INR; currency conversion is handled by your bank or payment provider.</li>
-            <li>We accept payments via Razorpay (UPI, Cards, Net Banking, Wallets) for Indian customers and Payoneer for international customers.</li>
+            <li>We accept payments via Razorpay — UPI, Cards, Net Banking and Wallets for Indian customers, and international cards for customers outside India.</li>
             <li>Payment must be completed before order processing begins.</li>
             <li>Prices may change without prior notice. The price at the time of order placement is final.</li>
             <li>Free shipping applies on orders above ₹999 within India. International shipping is charged separately.</li>

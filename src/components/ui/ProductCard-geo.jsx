@@ -1,45 +1,39 @@
 // frontend/src/components/ui/ProductCard.jsx
-// Replace your existing ProductCard with this version
-import { useState } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { ShoppingCart, Star, Heart } from 'lucide-react'
+import { ShoppingCart, Star } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useCart } from '../../context/CartContext'
-import { useWishlist } from '../../context/WishlistContext'
-import { useCurrency } from '../../context/CurrencyContext'
-import { thumbUrl } from '../../utils/image'
+import { CountryContext } from '../../context/CountryContext'
+import axios from 'axios'
 import toast from 'react-hot-toast'
 
 export default function ProductCard({ product, index = 0 }) {
-  const { addToCart }   = useCart()
-  const { formatPrice } = useCurrency()
-  const { toggleWishlist, isWishlisted } = useWishlist()
-  const [adding, setAdding] = useState(false)
-  const wished = isWishlisted(product._id)
+  const { addToCart }                    = useCart()
+  const { formatPrice, country }         = useContext(CountryContext)
+  const [adding, setAdding]              = useState(false)
+  const [countryPrices, setCountryPrices] = useState(product.countryPrices || null)
+
+  // Fetch country prices when country changes (skip for India)
+  useEffect(() => {
+    if (country.code === 'IN') return
+    axios.get(`/api/pricing/product/${product._id}`)
+      .then(r => setCountryPrices(r.data.pricing?.prices || {}))
+      .catch(() => {})
+  }, [product._id, country.code])
 
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : null
 
   const handleAddToCart = async (e) => {
-    if (product.colorVariants?.length > 0 || product.sizeVariants?.length > 0) {
-      // let the card's Link navigate to the product page so a colour/size can be chosen
-      const what = product.colorVariants?.length > 0 && product.sizeVariants?.length > 0
-        ? 'a colour and size'
-        : product.colorVariants?.length > 0 ? 'a colour' : 'a size'
-      toast(`Choose ${what} on the product page`, { icon: '🎨' })
-      return
-    }
     e.preventDefault()
     setAdding(true)
     try {
       await addToCart(product, 1)
       toast.success('Added to cart!')
-    } catch {
-      toast.error('Failed to add')
-    } finally {
-      setAdding(false)
-    }
+    } catch { toast.error('Failed to add') }
+    finally { setAdding(false) }
   }
 
   return (
@@ -54,35 +48,20 @@ export default function ProductCard({ product, index = 0 }) {
         {/* Image */}
         <div className="relative aspect-square bg-cream-100 overflow-hidden">
           <img
-            src={thumbUrl(product.images?.[0] || 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png')}
+            src={product.images?.[0] || 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png'}
             alt={product.name}
-            loading="lazy"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
-          {/* Discount badge */}
-          {discount > 0 && (
+          {discount > 0 && country.code === 'IN' && (
             <span className="absolute top-2 left-2 bg-saffron-500 text-white text-xs font-bold px-2 py-1 rounded-full">
               {discount}% OFF
             </span>
           )}
-          {/* Wishlist + badge */}
-          <div className="absolute top-2 right-2 flex flex-col items-end gap-1.5">
-            <motion.button
-              onClick={(e) => { e.preventDefault(); toggleWishlist(product) }}
-              whileTap={{ scale: 0.85 }}
-              aria-label={wished ? 'Remove from wishlist' : 'Add to wishlist'}
-              className={"w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition-colors " + (
-                wished ? 'bg-red-500 text-white' : 'bg-white/90 text-devotion-brown hover:text-red-500'
-              )}
-            >
-              <Heart size={15} className={wished ? 'fill-current' : ''} />
-            </motion.button>
-            {product.badge && (
-              <span className="bg-devotion-dark text-saffron-400 text-xs font-bold px-2 py-1 rounded-full">
-                {product.badge}
-              </span>
-            )}
-          </div>
+          {product.badge && (
+            <span className="absolute top-2 right-2 bg-devotion-dark text-saffron-400 text-xs font-bold px-2 py-1 rounded-full">
+              {product.badge}
+            </span>
+          )}
         </div>
 
         {/* Info */}
@@ -109,22 +88,18 @@ export default function ProductCard({ product, index = 0 }) {
             </div>
           )}
 
-          {/* Price row */}
+          {/* Price */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 flex-wrap">
-              {/* Main price — uses currency context */}
+            <div className="flex flex-col">
               <span className="font-display text-base font-bold text-devotion-brown">
-                {formatPrice(product.price)}
+                {formatPrice(product.price, countryPrices)}
               </span>
-              {/* Original price */}
-              {product.originalPrice && (
-                <span className="text-xs text-cream-400 line-through">
-                  {formatPrice(product.originalPrice)}
-                </span>
+              {/* Show original crossed price only for India */}
+              {country.code === 'IN' && product.originalPrice && (
+                <span className="text-xs text-cream-400 line-through">₹{product.originalPrice}</span>
               )}
             </div>
 
-            {/* Add to cart */}
             <motion.button
               onClick={handleAddToCart}
               disabled={adding || product.stock === 0}

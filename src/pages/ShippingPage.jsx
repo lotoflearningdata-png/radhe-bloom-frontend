@@ -91,11 +91,10 @@ export default function ShippingPage() {
 
         <Section title="3. International Shipping">
           <ul className="list-disc pl-6 space-y-2">
-            <li>We ship internationally via <strong>Payoneer payment flow</strong>. After placing your order, our team will contact you with shipping cost and payment details within 24 hours.</li>
+            <li>International orders are paid securely by card via <strong>Razorpay</strong> at checkout. Our team will contact you if any additional shipping cost applies to your destination.</li>
             <li>International delivery typically takes <strong>10–21 business days</strong> depending on destination country.</li>
             <li>Customs duties, import taxes and local fees in the destination country are the <strong>buyer's responsibility</strong>.</li>
             <li>We are not responsible for delays caused by customs clearance.</li>
-            <li>WhatsApp us at +91-9528078217 for international shipping quotes before ordering.</li>
           </ul>
         </Section>
 

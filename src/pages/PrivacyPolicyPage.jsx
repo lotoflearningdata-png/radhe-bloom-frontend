@@ -37,7 +37,7 @@ export default function PrivacyPolicyPage() {
           <ul className="list-disc pl-6 mt-3 space-y-2">
             <li><strong>Personal Identification:</strong> Name, email address, phone number when you register or place an order.</li>
             <li><strong>Shipping Information:</strong> Delivery address, city, state, PIN code.</li>
-            <li><strong>Payment Information:</strong> We do not store your card details. Payments are processed securely via Razorpay (for Indian customers) and Payoneer (for international customers).</li>
+            <li><strong>Payment Information:</strong> We do not store your card details. All payments are processed securely via Razorpay.</li>
             <li><strong>Usage Data:</strong> Pages visited, time spent, browser type — collected anonymously to improve our website.</li>
             <li><strong>Communications:</strong> Messages sent via our contact form or WhatsApp.</li>
           </ul>
@@ -69,7 +69,7 @@ export default function PrivacyPolicyPage() {
           <p>We only share your information with trusted third parties who are essential to our operations:</p>
           <ul className="list-disc pl-6 mt-3 space-y-2">
             <li><strong>Shiprocket:</strong> Your name and delivery address are shared with our shipping partner to deliver your order.</li>
-            <li><strong>Razorpay / Payoneer:</strong> Payment processing. They have their own privacy policies and are RBI-compliant.</li>
+            <li><strong>Razorpay:</strong> Payment processing. Razorpay has its own privacy policy and is RBI-compliant.</li>
             <li><strong>Cloudinary:</strong> For secure media storage.</li>
             <li><strong>Legal Authorities:</strong> If required by Indian law, court order, or government regulation.</li>
           </ul>

@@ -19,9 +19,7 @@ export default function OrderSuccessPage() {
         {isInternational ? 'Order Placed! 🌍' : 'Order Confirmed! 🙏'}
       </h1>
       <p className="text-cream-500 mb-2">
-        {isInternational
-          ? 'Our team will contact you within 24 hours with payment details.'
-          : 'Your divine order has been confirmed and is being processed.'}
+        Your divine order has been confirmed and is being processed.
       </p>
       <div className="bg-cream-100 rounded-2xl px-6 py-4 inline-block mb-4">
         <p className="text-xs text-cream-500 mb-1">Order ID</p>
@@ -30,13 +28,11 @@ export default function OrderSuccessPage() {
 
       {isInternational && (
         <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6 text-sm text-blue-700">
-          <p className="font-bold mb-1">Next Steps for International Order:</p>
-          <ol className="text-left space-y-1 list-decimal list-inside">
-            <li>We'll WhatsApp/Email you Payoneer payment details</li>
-            <li>Complete payment via Payoneer</li>
-            <li>We'll dispatch your order within 24 hours of payment</li>
-            <li>Tracking details will be shared via email</li>
-          </ol>
+          <p className="font-bold mb-1">🌍 International Order</p>
+          <p className="text-left">
+            Your payment was processed securely via Razorpay. We'll dispatch your order
+            shortly and share tracking details via email.
+          </p>
         </div>
       )}
 

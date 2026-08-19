@@ -207,7 +207,7 @@ export default function OrdersPage() {
                   {order.isInternational && (
                     <div className="bg-blue-50 rounded-xl p-3 text-sm text-blue-700">
                       <p className="font-bold">🌍 International Order</p>
-                      <p>Payment Method: Payoneer</p>
+                      <p>Payment Method: <span className="capitalize">{order.paymentMethod || 'Razorpay'}</span></p>
                       <p>Payment Status: <span className="font-bold capitalize">{order.paymentStatus}</span></p>
                       {order.paymentStatus === 'pending' && (
                        <Link to="/contact" className="text-sm text-saffron-600 font-bold hover:underline">Need help? Contact Us</Link>

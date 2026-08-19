@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useWishlist } from '../context/WishlistContext'
-import ProductCard from '../components/ui/ProductCard-currency'
+import ProductCard from '../components/ui/ProductCard-geo'
 import SEO from '../components/ui/SEO'
 
 export default function WishlistPage() {

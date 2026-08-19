@@ -34,6 +34,8 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import VerifyEmailPage from './pages/VerifyEmailPage'
 import WishlistPage from './pages/WishlistPage'
+import { CountryProvider } from './context/CountryContext'
+import AdminPricing from './pages/admin/AdminPricing'
 
 function AnalyticsTracker() {
   const location = useLocation()
@@ -49,43 +51,46 @@ export default function App() {
     <AuthProvider>
       <CartProvider>
         <WishlistProvider>
-        <CurrencyProvider>
-          <AnalyticsTracker />
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<HomePage />} />
-              <Route path="shop" element={<ShopPage />} />
-              <Route path="shop/:category" element={<ShopPage />} />
-              <Route path="product/:id" element={<ProductPage />} />
-              <Route path="cart" element={<CartPage />} />
-              <Route path="wishlist" element={<WishlistPage />} />
-              <Route path="checkout" element={<CheckoutPage />} />
-              <Route path="orders" element={<OrdersPage />} />
-              <Route path="dashboard" element={<DashboardPage />} />
-              <Route path="about" element={<AboutPage />} />
-              <Route path="order-success/:id" element={<OrderSuccessPage />} />
-              <Route path="contact" element={<ContactPage />} />
-              <Route path="privacy" element={<PrivacyPolicyPage />} />
-              <Route path="terms" element={<TermsPage />} />
-              <Route path="shipping" element={<ShippingPage />} />
-            </Route>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-            <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="orders" element={<AdminOrders />} />
-              <Route path="products" element={<AdminProducts />} />
-              <Route path="categories" element={<AdminCategories />} />
-              <Route path="customers" element={<AdminCustomers />} />
-              <Route path="coupons" element={<AdminCoupons />} />
-              <Route path="settings" element={<AdminSettings />} />
-            </Route>
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </CurrencyProvider>
+          <CurrencyProvider>
+            <AnalyticsTracker />
+            <CountryProvider>
+              <Routes>
+                <Route path="/" element={<Layout />}>
+                  <Route index element={<HomePage />} />
+                  <Route path="shop" element={<ShopPage />} />
+                  <Route path="shop/:category" element={<ShopPage />} />
+                  <Route path="product/:id" element={<ProductPage />} />
+                  <Route path="cart" element={<CartPage />} />
+                  <Route path="wishlist" element={<WishlistPage />} />
+                  <Route path="checkout" element={<CheckoutPage />} />
+                  <Route path="orders" element={<OrdersPage />} />
+                  <Route path="dashboard" element={<DashboardPage />} />
+                  <Route path="about" element={<AboutPage />} />
+                  <Route path="order-success/:id" element={<OrderSuccessPage />} />
+                  <Route path="contact" element={<ContactPage />} />
+                  <Route path="privacy" element={<PrivacyPolicyPage />} />
+                  <Route path="terms" element={<TermsPage />} />
+                  <Route path="shipping" element={<ShippingPage />} />
+                </Route>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+                <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="orders" element={<AdminOrders />} />
+                  <Route path="products" element={<AdminProducts />} />
+                  <Route path="categories" element={<AdminCategories />} />
+                  <Route path="customers" element={<AdminCustomers />} />
+                  <Route path="coupons" element={<AdminCoupons />} />
+                  <Route path="pricing" element={<AdminPricing />} /> 
+                  <Route path="settings" element={<AdminSettings />} />
+                </Route>
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </CountryProvider>
+          </CurrencyProvider>
         </WishlistProvider>
       </CartProvider>
     </AuthProvider>

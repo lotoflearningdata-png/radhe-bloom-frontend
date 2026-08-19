@@ -3,10 +3,10 @@ import { useState } from 'react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import { Tag, X, CheckCircle, Loader } from 'lucide-react'
-import { useCurrency } from '../../context/CurrencyContext'
+import { useCountry } from '../../context/CountryContext'
 
 export default function CouponInput({ orderTotal, onApply, onRemove, appliedCoupon }) {
-  const { formatPrice } = useCurrency()
+  const { formatPrice } = useCountry()
   const [code, setCode]       = useState('')
   const [loading, setLoading] = useState(false)
   const [showInput, setShowInput] = useState(false)
@@ -21,7 +21,7 @@ export default function CouponInput({ orderTotal, onApply, onRemove, appliedCoup
         orderTotal,
       })
       onApply(data)
-      toast.success(`Coupon applied! You saved ${formatPrice(data.discount)}`)
+      toast.success(`Coupon applied! You saved ${formatPrice(data.discount, {})}`)
       setCode('')
       setShowInput(false)
     } catch (err) {
@@ -44,7 +44,7 @@ export default function CouponInput({ orderTotal, onApply, onRemove, appliedCoup
           <CheckCircle size={16} className="text-green-600" />
           <div>
             <p className="text-sm font-bold text-green-700">{appliedCoupon.code} applied</p>
-            <p className="text-xs text-green-600">You saved {formatPrice(appliedCoupon.discount)}</p>
+            <p className="text-xs text-green-600">You saved {formatPrice(appliedCoupon.discount, {})}</p>
           </div>
         </div>
         <button onClick={handleRemove} className="text-green-600 hover:text-red-500 transition-colors">

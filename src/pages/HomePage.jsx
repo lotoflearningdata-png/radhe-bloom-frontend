@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { ArrowRight, Sparkles } from 'lucide-react'
-import ProductCard from '../components/ui/ProductCard-currency'
+import ProductCard from '../components/ui/ProductCard-geo'
 import SEO from '../components/ui/SEO'
 import CategorySection from '../components/ui/CategorySection' // Imported new component
 import ShortsSection from '../components/ui/ShortsSection'

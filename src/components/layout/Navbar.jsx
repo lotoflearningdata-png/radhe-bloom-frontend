@@ -4,8 +4,8 @@ import { ShoppingBag, User, Search, Menu, X, LogOut, Package, LayoutDashboard, C
 import { useAuth } from '../../context/AuthContext'
 import { useCart } from '../../context/CartContext'
 import { useWishlist } from '../../context/WishlistContext'
-import CurrencyToggle from '../ui/CurrencyToggle'
 import useCategories from '../../hooks/useCategories'
+import CountrySelector from '../ui/CountrySelector'
 
 const NAV_LINKS = [
   { label: 'Home', to: '/' },
@@ -120,7 +120,7 @@ export default function Navbar() {
 
           {/* Right Icons */}
           <div className="flex items-center gap-1.5">
-            <CurrencyToggle />
+            <CountrySelector />
             <button onClick={() => setSearchOpen(!searchOpen)}
               className="p-2 rounded-full hover:bg-cream-100 text-devotion-brown transition-colors">
               <Search size={20} />

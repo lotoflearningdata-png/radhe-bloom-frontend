@@ -231,7 +231,7 @@ export default function AdminOrders() {
                   {/* Tracking / Actions */}
                   <div>
                     <p className="text-xs font-bold text-cream-500 uppercase mb-2">Tracking & Actions</p>
-                    {order.isInternational && order.paymentStatus !== 'paid' ? (
+                    {order.paymentMethod === 'payoneer' && order.paymentStatus !== 'paid' ? (
                       <button onClick={() => confirmPayoneer(order._id)}
                         className="btn-primary text-xs px-4 py-2">
                         ✅ Confirm Payoneer Payment

@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
-import { useCurrency } from '../context/CurrencyContext'
+import { useCountry } from '../context/CountryContext'
+import { useGeoCartPricing } from '../hooks/useGeoCartPricing'
 import CouponInput from '../components/checkout/CouponInput'
 import { thumbUrl } from '../utils/image'
 import { Lock, ArrowRight, Globe, MapPin, Banknote } from 'lucide-react'
@@ -21,12 +22,17 @@ const INDIAN_STATES = [
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart } = useCart()
   const { user }    = useAuth()
-  const { formatPrice, currency } = useCurrency()
+  const { country, detecting } = useCountry()
+  const { isINR, fmt, convert, unitPrice, subtotal } = useGeoCartPricing(cart)
   const navigate    = useNavigate()
   const shipping    = cartTotal >= 999 ? 0 : 69
   const total       = cartTotal + shipping
 
-  const [isInternational, setIsInternational] = useState(false)
+  // Default the toggle from the selected/detected country (non-India → International)
+  const [isInternational, setIsInternational] = useState(country.code !== 'IN')
+  useEffect(() => {
+    if (!detecting) setIsInternational(country.code !== 'IN')
+  }, [country.code, detecting])
   const [paymentMethod, setPaymentMethod] = useState('razorpay') // 'razorpay' | 'cod'
   const [loading, setLoading] = useState(false)
   const [appliedCoupon, setAppliedCoupon] = useState(null)
@@ -42,9 +48,11 @@ export default function CheckoutPage() {
     country: 'India',
   })
 
-  // Discount + final payable amount
+  // Discount + final payable amount (always INR — this is what gets charged)
   const discount   = appliedCoupon?.discount || 0
   const finalTotal = Math.max(0, total - discount)
+  // Display-only total in the visitor's currency (geo prices + converted shipping/discount)
+  const displayTotal = Math.max(0, subtotal + convert(shipping) - convert(discount))
 
   if (cart.length === 0) return (
     <div className="max-w-xl mx-auto px-4 py-32 text-center">
@@ -127,7 +135,7 @@ export default function CheckoutPage() {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-              shippingAddress: { ...form, country: 'India' },
+              shippingAddress: { ...form, country: isInternational ? form.country : 'India' },
               items: cart.map(i => ({ product: i.product._id, qty: i.qty, price: i.price ?? i.product.price, color: i.color, size: i.size })),
               total: finalTotal,
               couponCode: appliedCoupon?.code || null,
@@ -182,27 +190,6 @@ export default function CheckoutPage() {
     }
   }
 
-  // ── Payoneer (International) ───────────────────────────────────
-  const handleInternational = async () => {
-    if (!validateForm()) return
-    setLoading(true)
-    try {
-      const { data: order } = await axios.post('/api/orders/create-international', {
-        shippingAddress: form,
-        items: cart.map(i => ({ product: i.product._id, qty: i.qty, price: i.price ?? i.product.price, color: i.color, size: i.size })),
-        total: finalTotal,
-        couponCode: appliedCoupon?.code || null,
-        discount: appliedCoupon?.discount || 0,
-      })
-      clearCart()
-      navigate(`/order-success/${order._id}?international=true`)
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Order creation failed')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   return (
     <div className="max-w-5xl mx-auto px-4 py-12">
       <SEO title="Checkout" noindex />
@@ -232,27 +219,12 @@ export default function CheckoutPage() {
                 <Globe className={isInternational ? 'text-saffron-500' : 'text-cream-400'} size={20} />
                 <div className="text-left">
                   <p className={"font-bold text-sm " + (isInternational ? 'text-saffron-700' : 'text-devotion-brown')}>International</p>
-                  <p className="text-xs text-cream-500">Payoneer, Wire</p>
+                  <p className="text-xs text-cream-500">Cards via Razorpay</p>
                 </div>
                 {isInternational && <span className="ml-auto text-saffron-500 text-lg">✓</span>}
               </button>
             </div>
           </div>
-
-          {/* International Info Banner — WhatsApp removed, points to Contact page */}
-          {isInternational && (
-            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4">
-              <p className="font-bold text-blue-700 text-sm mb-1">🌍 International Order Process</p>
-              <p className="text-blue-600 text-sm">
-                Place your order below. Our team will contact you within 24 hours via email
-                with Payoneer payment details. Order will be dispatched after payment confirmation.
-              </p>
-              <Link to="/contact"
-                className="inline-flex items-center gap-1 text-saffron-600 font-bold text-sm mt-2 hover:underline">
-                Contact us first →
-              </Link>
-            </div>
-          )}
 
           {/* Shipping Form */}
           <div className="bg-white rounded-2xl p-6 shadow-card">
@@ -365,7 +337,7 @@ export default function CheckoutPage() {
                     <p className="text-xs font-bold text-devotion-brown line-clamp-1">{item.product.name}</p>
                     <p className="text-xs text-cream-500">{[item.color, item.size].filter(Boolean).join(', ')}{(item.color || item.size) ? ' · ' : ''}×{item.qty}</p>
                   </div>
-                  <span className="text-sm font-bold text-devotion-brown">{formatPrice((item.price ?? item.product.price) * item.qty)}</span>
+                  <span className="text-sm font-bold text-devotion-brown">{fmt(unitPrice(item) * item.qty)}</span>
                 </div>
               ))}
             </div>
@@ -384,29 +356,29 @@ export default function CheckoutPage() {
 
             <div className="space-y-2 text-sm mb-5">
               <div className="flex justify-between text-devotion-brown/70">
-                <span>Subtotal</span><span>{formatPrice(cartTotal)}</span>
+                <span>Subtotal</span><span>{fmt(subtotal)}</span>
               </div>
               <div className="flex justify-between text-devotion-brown/70">
                 <span>Shipping</span>
-                <span className={shipping === 0 ? 'text-green-600 font-bold' : ''}>{shipping === 0 ? 'FREE' : formatPrice(shipping)}</span>
+                <span className={shipping === 0 ? 'text-green-600 font-bold' : ''}>{shipping === 0 ? 'FREE' : fmt(convert(shipping))}</span>
               </div>
 
               {appliedCoupon && (
                 <div className="flex justify-between text-green-600 font-bold">
                   <span>Coupon ({appliedCoupon.code})</span>
-                  <span>-{formatPrice(appliedCoupon.discount)}</span>
+                  <span>-{fmt(convert(appliedCoupon.discount))}</span>
                 </div>
               )}
 
               {isInternational && (
                 <div className="flex justify-between text-blue-600 text-xs">
-                  <span>International shipping</span><span>Calculated separately</span>
+                  <span>International shipping</span><span>Extra cost (if any) billed separately</span>
                 </div>
               )}
               <hr className="border-cream-200" />
               <div className="flex justify-between font-bold text-devotion-brown">
                 <span>Total</span>
-                <span className="font-display text-xl">{formatPrice(finalTotal)}</span>
+                <span className="font-display text-xl">{fmt(displayTotal)}</span>
               </div>
             </div>
 
@@ -416,20 +388,20 @@ export default function CheckoutPage() {
                 <button onClick={handleCOD} disabled={loading}
                   className="btn-primary w-full justify-center text-base disabled:opacity-60 disabled:cursor-not-allowed">
                   <Banknote size={16} />
-                  {loading ? 'Placing Order...' : `Place Order — Pay ${formatPrice(finalTotal)} on Delivery`}
+                  {loading ? 'Placing Order...' : `Place Order — Pay ${fmt(displayTotal)} on Delivery`}
                 </button>
               ) : (
                 <button onClick={handleRazorpay} disabled={loading}
                   className="btn-primary w-full justify-center text-base disabled:opacity-60 disabled:cursor-not-allowed">
                   <Lock size={16} />
-                  {loading ? 'Processing...' : `Pay ${formatPrice(finalTotal)} via Razorpay`}
+                  {loading ? 'Processing...' : `Pay ${fmt(displayTotal)} via Razorpay`}
                 </button>
               )
             ) : (
-              <button onClick={handleInternational} disabled={loading}
+              <button onClick={handleRazorpay} disabled={loading}
                 className="btn-primary w-full justify-center text-base disabled:opacity-60 disabled:cursor-not-allowed">
-                <Globe size={16} />
-                {loading ? 'Placing Order...' : 'Place International Order'}
+                <Lock size={16} />
+                {loading ? 'Processing...' : `Pay ${fmt(displayTotal)} via Razorpay`}
               </button>
             )}
 
@@ -441,8 +413,8 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {/* Currency disclaimer — only shows if USD selected */}
-            {currency === 'USD' && paymentMethod === 'razorpay' && !isInternational && (
+            {/* Currency disclaimer — only shows for non-India visitors */}
+            {!isINR && (isInternational || paymentMethod === 'razorpay') && (
               <p className="text-xs text-center text-cream-500 mt-2">
                 * Prices shown in USD for reference. You will be charged in INR (₹{finalTotal.toFixed(2)}) via Razorpay.
               </p>
@@ -450,11 +422,9 @@ export default function CheckoutPage() {
 
             <p className="text-xs text-center text-cream-500 mt-3 flex items-center justify-center gap-1">
               <Lock size={10} />{' '}
-              {isInternational
-                ? 'Secure order • Payoneer payment via email'
-                : paymentMethod === 'cod'
-                  ? 'Pay in cash to the delivery agent'
-                  : 'Secured by Razorpay'}
+              {!isInternational && paymentMethod === 'cod'
+                ? 'Pay in cash to the delivery agent'
+                : 'Secured by Razorpay'}
             </p>
           </div>
         </div>
