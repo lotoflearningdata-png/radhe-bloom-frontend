@@ -25,14 +25,16 @@ export default function CheckoutPage() {
   const { country, detecting } = useCountry()
   const { isINR, fmt, convert, unitPrice, subtotal } = useGeoCartPricing(cart)
   const navigate    = useNavigate()
-  const shipping    = cartTotal >= 999 ? 0 : 69
-  const total       = cartTotal + shipping
 
   // Default the toggle from the selected/detected country (non-India → International)
   const [isInternational, setIsInternational] = useState(country.code !== 'IN')
   useEffect(() => {
     if (!detecting) setIsInternational(country.code !== 'IN')
   }, [country.code, detecting])
+
+  // International orders ship free — no shipping charges of any kind
+  const shipping    = isInternational ? 0 : (cartTotal >= 999 ? 0 : 69)
+  const total       = cartTotal + shipping
   const [paymentMethod, setPaymentMethod] = useState('razorpay') // 'razorpay' | 'cod'
   const [loading, setLoading] = useState(false)
   const [appliedCoupon, setAppliedCoupon] = useState(null)
@@ -370,11 +372,6 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              {isInternational && (
-                <div className="flex justify-between text-blue-600 text-xs">
-                  <span>International shipping</span><span>Extra cost (if any) billed separately</span>
-                </div>
-              )}
               <hr className="border-cream-200" />
               <div className="flex justify-between font-bold text-devotion-brown">
                 <span>Total</span>

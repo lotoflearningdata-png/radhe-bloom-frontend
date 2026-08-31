@@ -31,7 +31,7 @@ export default function ShippingPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
             { icon: '🇮🇳', title: 'Domestic Shipping', value: '3–7 business days', sub: 'Free above ₹999' },
-            { icon: '🌍', title: 'International', value: '10–21 business days', sub: 'Charges apply' },
+            { icon: '🌍', title: 'International', value: '10–21 business days', sub: 'Free shipping' },
             { icon: '🔄', title: 'Returns', value: '24–48 hours window', sub: 'Damaged items only' },
           ].map((card, i) => (
             <div key={i} className="bg-cream-50 border border-cream-200 rounded-2xl p-5 text-center">
@@ -91,7 +91,8 @@ export default function ShippingPage() {
 
         <Section title="3. International Shipping">
           <ul className="list-disc pl-6 space-y-2">
-            <li>International orders are paid securely by card via <strong>Razorpay</strong> at checkout. Our team will contact you if any additional shipping cost applies to your destination.</li>
+            <li>International shipping is <strong className="text-green-600">completely FREE</strong> — we do not charge any shipping fees of any kind on international orders.</li>
+            <li>International orders are paid securely by card via <strong>Razorpay</strong> at checkout.</li>
             <li>International delivery typically takes <strong>10–21 business days</strong> depending on destination country.</li>
             <li>Customs duties, import taxes and local fees in the destination country are the <strong>buyer's responsibility</strong>.</li>
             <li>We are not responsible for delays caused by customs clearance.</li>

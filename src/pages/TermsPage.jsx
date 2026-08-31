@@ -70,7 +70,7 @@ export default function TermsPage() {
             <li>We accept payments via Razorpay — UPI, Cards, Net Banking and Wallets for Indian customers, and international cards for customers outside India.</li>
             <li>Payment must be completed before order processing begins.</li>
             <li>Prices may change without prior notice. The price at the time of order placement is final.</li>
-            <li>Free shipping applies on orders above ₹999 within India. International shipping is charged separately.</li>
+            <li>Free shipping applies on orders above ₹999 within India. International shipping is always free — no shipping charges apply.</li>
           </ul>
         </Section>
 
