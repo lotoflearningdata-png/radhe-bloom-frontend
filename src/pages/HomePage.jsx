@@ -24,7 +24,7 @@ const SLIDES = [
 
 const FESTIVALS = [
   { name: 'Janmashtami', icon: '🎉', desc: 'Makhan Chor sets, Dahi Handi décor, Bal Krishna idols & Ashta Sakhi figurines.', from: 'from-yellow-900', to: 'to-devotion-dark', accent: 'text-yellow-300', badge: 'Most Popular', slug: 'janmashtami' },
-  { name: 'Navratri',    icon: '🌺', desc: 'Nav Durga sets, colourful décor & festive accessories for nine divine nights.',   from: 'from-red-900',    to: 'to-devotion-dark', accent: 'text-red-300',    badge: 'New Collection',slug: 'festive-sets' },
+  { name: 'Navratri',    icon: '🌺', desc: 'Nav Durga sets, colourful décor & festive accessories for nine divine nights.',   from: 'from-red-900',    to: 'to-devotion-dark', accent: 'text-red-300',    badge: 'New Collection',slug: 'nav-durga' },
   { name: 'Diwali',      icon: '🪔', desc: 'Ganesh-Laxmi idols, scented candles, rangoli mats & premium gift hampers.',       from: 'from-orange-900', to: 'to-devotion-dark', accent: 'text-orange-300', badge: 'Best Gifting',  slug: 'gift-sets' },
 ]
 
@@ -73,16 +73,16 @@ export default function HomePage() {
   const [newArr, setNewArr]     = useState([])
   const [loading, setLoading]   = useState(true)
   const [tab, setTab]           = useState('featured')
-  const [janmashtamiImg, setJanmashtamiImg] = useState(null)
+  const [navDurgaImg, setNavDurgaImg] = useState(null)
 
-  const janmashtamiRef = useRef(null)
-  const { scrollYProgress: janmashtamiScroll } = useScroll({
-    target: janmashtamiRef,
+  const navDurgaRef = useRef(null)
+  const { scrollYProgress: navDurgaScroll } = useScroll({
+    target: navDurgaRef,
     offset: ['start end', 'end start'],
   })
-  const janmashtamiTextY   = useTransform(janmashtamiScroll, [0, 1], [100, -100])
-  const janmashtamiImgY    = useTransform(janmashtamiScroll, [0, 1], [140, -140])
-  const janmashtamiPetalsY = useTransform(janmashtamiScroll, [0, 1], [-80, 180])
+  const navDurgaTextY   = useTransform(navDurgaScroll, [0, 1], [100, -100])
+  const navDurgaImgY    = useTransform(navDurgaScroll, [0, 1], [140, -140])
+  const navDurgaPetalsY = useTransform(navDurgaScroll, [0, 1], [-80, 180])
 
   useEffect(() => {
     const t = setInterval(() => setSlide(s => (s + 1) % SLIDES.length), 10000)
@@ -98,12 +98,17 @@ export default function HomePage() {
       .catch(() => setLoading(false))
     axios.get('/api/settings')
       .then(r => {
-        const pinned = r.data.settings?.janmashtamiHeroImage
+        const pinned = r.data.settings?.navDurgaHeroImage
         if (pinned) {
-          setJanmashtamiImg(pinned)
+          setNavDurgaImg(pinned)
         } else {
-          axios.get('/api/products?category=janmashtami&limit=8')
-            .then(r2 => setJanmashtamiImg(bestProductImage(r2.data.products || [])))
+          // The nav-durga category may still be empty while products are being
+          // tagged — fall back to a name search so the medallion is never blank
+          axios.get('/api/products?category=nav-durga&limit=8')
+            .then(r2 => (r2.data.products || []).length
+              ? r2.data.products
+              : axios.get('/api/products?search=Nav Durga&limit=8').then(r3 => r3.data.products || []))
+            .then(products => setNavDurgaImg(bestProductImage(products)))
             .catch(() => {})
         }
       })
@@ -276,8 +281,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── JANMASHTAMI HERO ── */}
-      <section ref={janmashtamiRef} className="relative min-h-[65vh] flex items-center overflow-hidden bg-devotion-dark">
+      {/* ── NAV DURGA HERO ── */}
+      <section ref={navDurgaRef} className="relative min-h-[65vh] flex items-center overflow-hidden bg-devotion-dark">
         {/* Rich festive gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-devotion-dark via-[#4a2f12] to-devotion-dark" />
         {/* Dot texture, consistent with the main hero */}
@@ -287,8 +292,8 @@ export default function HomePage() {
         <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-saffron-500/10 blur-3xl pointer-events-none" />
 
         {/* Drifting festive petals — parallax layer, moves fastest on scroll */}
-        <motion.div style={{ y: janmashtamiPetalsY }} className="absolute inset-0 pointer-events-none">
-          {['🌼','🪔','✨','🌸'].map((p, i) => (
+        <motion.div style={{ y: navDurgaPetalsY }} className="absolute inset-0 pointer-events-none">
+          {['🌺','🪔','✨','🌸'].map((p, i) => (
             <motion.span key={i}
               className="absolute text-2xl opacity-30 select-none"
               style={{ left: `${12 + i * 24}%`, top: '-5%' }}
@@ -304,7 +309,7 @@ export default function HomePage() {
 
             {/* Text — subtle parallax on scroll */}
             <motion.div className="max-w-xl text-center md:text-left"
-              style={{ y: janmashtamiTextY }}
+              style={{ y: navDurgaTextY }}
               initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
               <span className="inline-flex items-center gap-2 bg-saffron-400/10 text-saffron-400 text-xs font-bold uppercase tracking-[3px] px-4 py-1.5 rounded-full mb-5 border border-saffron-400/20">
                 ✨ Season Special
@@ -314,7 +319,7 @@ export default function HomePage() {
                 initial="hidden" whileInView="visible" viewport={{ once: true }}
                 variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } } }}>
                 <h2 className="font-display text-5xl md:text-6xl text-white leading-none mb-1 flex flex-wrap gap-x-3 justify-center md:justify-start">
-                  {['The', 'Janmashtami'].map((word) => (
+                  {['The', 'Nav', 'Durga'].map((word) => (
                     <motion.span key={word} className="inline-block"
                       variants={{ hidden: { opacity: 0, y: 28 }, visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } } }}>
                       {word}
@@ -330,10 +335,10 @@ export default function HomePage() {
               </motion.div>
 
               <p className="text-cream-200 text-base md:text-lg leading-relaxed mb-8 max-w-lg">
-                From the swaying Radha Krishna Jhula to mischievous Makhan Chor Leela sets, dreamy Dahi Handi mataki décor and the beloved Ashta Sakhi idols — each piece is hand-picked to bring Krishna's playful leela home this Janmashtami.
+                From the nine hand-painted forms of Maa Durga to Garba-ready mandir backdrops, Chunri-draped Kalash sets and festive wooden décor — each piece is hand-picked to bring the Devi's blessings home through all nine divine nights.
               </p>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }} className="inline-block">
-                <Link to="/shop/janmashtami" className="btn-primary text-base px-8 py-4 relative overflow-hidden">
+                <Link to="/shop/nav-durga" className="btn-primary text-base px-8 py-4 relative overflow-hidden">
                   <span className="relative z-10 inline-flex items-center gap-2">
                     Explore Collection <ArrowRight size={18} />
                   </span>
@@ -349,7 +354,7 @@ export default function HomePage() {
 
             {/* Animated product medallion — moves faster than text on scroll for depth */}
             <motion.div className="relative shrink-0"
-              style={{ y: janmashtamiImgY }}
+              style={{ y: navDurgaImgY }}
               initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.15 }}>
               <motion.div className="relative w-56 h-56 md:w-64 md:h-64"
                 animate={{ y: [0, -10, 0] }}
@@ -382,11 +387,11 @@ export default function HomePage() {
                 ))}
 
                 <div className="absolute inset-[5px] rounded-full overflow-hidden shadow-inner bg-[#F5ECD9]">
-                  {janmashtamiImg ? (
+                  {navDurgaImg ? (
                     <motion.img
-                      key={janmashtamiImg}
-                      src={thumbUrl(janmashtamiImg, 500)}
-                      alt="Janmashtami Collection"
+                      key={navDurgaImg}
+                      src={thumbUrl(navDurgaImg, 500)}
+                      alt="Nav Durga Collection"
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
                       className="w-full h-full object-cover"
                     />
@@ -397,7 +402,7 @@ export default function HomePage() {
                 <motion.span className="absolute -bottom-2 -right-2 text-4xl drop-shadow-lg"
                   animate={{ rotate: [0, -12, 12, 0] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}>
-                  🎉
+                  🔱
                 </motion.span>
                 <motion.div className="absolute -top-3 -left-3 bg-white rounded-full px-3 py-1.5 shadow-lg"
                   animate={{ y: [0, 6, 0] }}

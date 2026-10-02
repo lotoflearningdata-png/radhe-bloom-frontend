@@ -3,6 +3,7 @@ import axios from 'axios'
 
 // Shown instantly while the API loads (and if it fails) so menus never flash empty
 const DEFAULTS = [
+  { name: 'Nav Durga',           slug: 'nav-durga' },
   { name: 'Janmashtami',         slug: 'janmashtami' },
   { name: 'Divine Idols',        slug: 'divine-idols' },
   { name: 'Wooden MDF Idols',    slug: 'wooden-mdf-idols' },

@@ -21,7 +21,7 @@ export default function SEO({ title, description, image, url, type = 'website', 
       <meta name="description" content={fullDesc} />
       {noindex
         ? <meta name="robots" content="noindex, nofollow" />
-        : <meta name="keywords" content="radhe bloom, krishna idol, radha krishna, MDF cutout, devotional gifts, janmashtami, navratri, hindu idol, handcrafted, wholesale" />}
+        : <meta name="keywords" content="radhe bloom, krishna idol, radha krishna, MDF cutout, devotional gifts, nav durga, navratri, durga idol, janmashtami, hindu idol, handcrafted, wholesale" />}
       <meta name="author" content="Radhe Bloom" />
       <link rel="canonical" href={fullUrl} />
       {gscCode && <meta name="google-site-verification" content={gscCode} />}
