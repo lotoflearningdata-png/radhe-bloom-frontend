@@ -17,7 +17,15 @@ const FEATURES = [
   { icon: '✅', title: '100% Authentic',    desc: 'Handcrafted with love',     color: 'bg-purple-50 text-purple-500' },
 ]
 
+// Diwali poster: wide banner for desktop/tablet, portrait version for phones
+const HERO_PHOTO        = 'https://res.cloudinary.com/dayndbxgi/image/upload/q_auto,f_auto/v1792072243/radhe_bloom_diwali_1920x600_fspdnr.jpg'
+const HERO_PHOTO_MOBILE = 'https://res.cloudinary.com/dayndbxgi/image/upload/q_auto,f_auto/v1792072243/radhe_bloom_diwali_1080x1350_amvpix.jpg'
+// Season-special medallion fallback: the bottle-and-diyas part of the portrait poster
+const SEASON_FALLBACK_IMG = 'https://res.cloudinary.com/dayndbxgi/image/upload/c_crop,x_160,y_560,w_720,h_720/c_fill,w_500,h_500/f_auto,q_auto/v1792072243/radhe_bloom_diwali_1080x1350_amvpix.jpg'
+
 const SLIDES = [
+  // Poster slide — the image carries its own text, so no heading is overlaid
+  { image: HERO_PHOTO, alt: 'Diwali offer — flat 20% off on all Diwali products & fragrances', cta: 'Explore Collection', to: '/shop' },
   { tag: 'New Arrivals',        title: 'Bring the Divine', sub: 'Home',   desc: 'Handcrafted Krishna idols & MDF décor', cta: 'Explore Collection', to: '/shop/divine-idols' },
   { tag: 'Wholesale Available', title: 'Retail & Bulk',    sub: 'Orders', desc: 'Whether one or a hundred, we serve you with equal devotion and care', cta: 'Shop Now', to: '/shop' },
 ]
@@ -48,7 +56,7 @@ const fadeUp = {
 }
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }
 
-const FALLBACK_IMG = 'https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png'
+const FALLBACK_IMG ='https://res.cloudinary.com/dayndbxgi/image/upload/v1774605700/Radhe_Image_Logo_v9wqgn.png'
 
 function getImageScore(product) {
   const img = product.images?.[0]
@@ -73,16 +81,16 @@ export default function HomePage() {
   const [newArr, setNewArr]     = useState([])
   const [loading, setLoading]   = useState(true)
   const [tab, setTab]           = useState('featured')
-  const [navDurgaImg, setNavDurgaImg] = useState(null)
+  const [seasonImg, setSeasonImg] = useState(null)
 
-  const navDurgaRef = useRef(null)
-  const { scrollYProgress: navDurgaScroll } = useScroll({
-    target: navDurgaRef,
+  const seasonRef = useRef(null)
+  const { scrollYProgress: seasonScroll } = useScroll({
+    target: seasonRef,
     offset: ['start end', 'end start'],
   })
-  const navDurgaTextY   = useTransform(navDurgaScroll, [0, 1], [100, -100])
-  const navDurgaImgY    = useTransform(navDurgaScroll, [0, 1], [140, -140])
-  const navDurgaPetalsY = useTransform(navDurgaScroll, [0, 1], [-80, 180])
+  const seasonTextY   = useTransform(seasonScroll, [0, 1], [100, -100])
+  const seasonImgY    = useTransform(seasonScroll, [0, 1], [140, -140])
+  const seasonPetalsY = useTransform(seasonScroll, [0, 1], [-80, 180])
 
   useEffect(() => {
     const t = setInterval(() => setSlide(s => (s + 1) % SLIDES.length), 10000)
@@ -96,23 +104,13 @@ export default function HomePage() {
     axios.get('/api/products?sort=newest&limit=8')
       .then(r => { setNewArr(sortProductsByImage(r.data.products || [])); setLoading(false) })
       .catch(() => setLoading(false))
-    axios.get('/api/settings')
+    // Medallion shows the best photo from the Diwali category, or the poster crop until it has products
+    axios.get('/api/products?category=diwali&limit=8')
       .then(r => {
-        const pinned = r.data.settings?.navDurgaHeroImage
-        if (pinned) {
-          setNavDurgaImg(pinned)
-        } else {
-          // The nav-durga category may still be empty while products are being
-          // tagged — fall back to a name search so the medallion is never blank
-          axios.get('/api/products?category=nav-durga&limit=8')
-            .then(r2 => (r2.data.products || []).length
-              ? r2.data.products
-              : axios.get('/api/products?search=Nav Durga&limit=8').then(r3 => r3.data.products || []))
-            .then(products => setNavDurgaImg(bestProductImage(products)))
-            .catch(() => {})
-        }
+        const products = r.data.products || []
+        setSeasonImg(thumbUrl(bestProductImage(products), 500) || SEASON_FALLBACK_IMG)
       })
-      .catch(() => {})
+      .catch(() => setSeasonImg(SEASON_FALLBACK_IMG))
   }, [])
 
   const s    = SLIDES[slide]
@@ -135,6 +133,20 @@ export default function HomePage() {
         >
           <source src="https://res.cloudinary.com/dayndbxgi/video/upload/q_auto/f_auto/v1774610918/Radhe_Krishna_Abhishek_iwleuj.mp4" type="video/mp4" />
         </video>
+        {/* Poster crossfades in over the video on its own slide */}
+        <motion.div
+          aria-hidden="true"
+          className="absolute inset-0 overflow-hidden"
+          initial={false}
+          animate={{ opacity: s.image ? 1 : 0 }}
+          transition={{ duration: 1.2, ease: 'easeInOut' }}
+        >
+          <picture>
+            <source media="(max-width: 767px)" srcSet={HERO_PHOTO_MOBILE} />
+            <img src={HERO_PHOTO} alt="" fetchPriority="high" className="absolute inset-0 w-full h-full object-cover" />
+          </picture>
+        </motion.div>
+        {!s.image && <>
         <motion.div
           key={`overlay-${slide}`}
           className="absolute inset-0"
@@ -142,10 +154,23 @@ export default function HomePage() {
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}
         />
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #e0d28f 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+        </>}
 
-        <div className="max-w-7xl mx-auto px-4 w-full py-16 relative z-10">
+        {s.image && <>
+          <Link to={s.to} aria-label={s.alt} className="absolute inset-0 z-10" />
+          {/* Lower-left on desktop so it clears the poster's text; centred over the table on phones */}
+          <div className="absolute inset-x-0 bottom-[8%] md:bottom-12 md:left-[5%] z-20 flex justify-center md:justify-start pointer-events-none">
+            <motion.div key={`cta-${slide}`} className="pointer-events-auto"
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.5 }}
+              whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.96 }}>
+              <Link to={s.to} className="btn-primary text-sm md:text-base px-6 py-3 md:px-8 md:py-4 whitespace-nowrap shadow-lg">{s.cta} <ArrowRight size={18} /></Link>
+            </motion.div>
+          </div>
+        </>}
+
+        <div className="max-w-7xl mx-auto px-4 w-full py-16 relative z-10 pointer-events-none">
           <AnimatePresence mode="wait">
-            <motion.div key={slide} className="max-w-2xl"
+            {!s.image && <motion.div key={slide} className="max-w-2xl pointer-events-auto"
               initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 50 }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
               <motion.span className="text-saffron-400 text-xs uppercase tracking-[4px] font-bold flex items-center gap-2 mb-5"
@@ -172,11 +197,11 @@ export default function HomePage() {
                   <Link to={s.to} className="btn-primary text-base px-8 py-4">{s.cta} <ArrowRight size={18} /></Link>
                 </motion.div>
               </motion.div>
-            </motion.div>
+            </motion.div>}
           </AnimatePresence>
         </div>
 
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
           {SLIDES.map((_, i) => (
             <motion.button key={i} onClick={() => setSlide(i)}
               animate={{ width: i === slide ? 32 : 8, backgroundColor: i === slide ? '#e0d28f' : 'rgba(255,255,255,0.4)' }}
@@ -281,8 +306,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── NAV DURGA HERO ── */}
-      <section ref={navDurgaRef} className="relative min-h-[65vh] flex items-center overflow-hidden bg-devotion-dark">
+      {/* ── SEASON SPECIAL: DIWALI ── */}
+      <section ref={seasonRef} className="relative min-h-[65vh] flex items-center overflow-hidden bg-devotion-dark">
         {/* Rich festive gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-devotion-dark via-[#4a2f12] to-devotion-dark" />
         {/* Dot texture, consistent with the main hero */}
@@ -292,7 +317,7 @@ export default function HomePage() {
         <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-saffron-500/10 blur-3xl pointer-events-none" />
 
         {/* Drifting festive petals — parallax layer, moves fastest on scroll */}
-        <motion.div style={{ y: navDurgaPetalsY }} className="absolute inset-0 pointer-events-none">
+        <motion.div style={{ y: seasonPetalsY }} className="absolute inset-0 pointer-events-none">
           {['🌺','🪔','✨','🌸'].map((p, i) => (
             <motion.span key={i}
               className="absolute text-2xl opacity-30 select-none"
@@ -309,7 +334,7 @@ export default function HomePage() {
 
             {/* Text — subtle parallax on scroll */}
             <motion.div className="max-w-xl text-center md:text-left"
-              style={{ y: navDurgaTextY }}
+              style={{ y: seasonTextY }}
               initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
               <span className="inline-flex items-center gap-2 bg-saffron-400/10 text-saffron-400 text-xs font-bold uppercase tracking-[3px] px-4 py-1.5 rounded-full mb-5 border border-saffron-400/20">
                 ✨ Season Special
@@ -319,7 +344,7 @@ export default function HomePage() {
                 initial="hidden" whileInView="visible" viewport={{ once: true }}
                 variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } } }}>
                 <h2 className="font-display text-5xl md:text-6xl text-white leading-none mb-1 flex flex-wrap gap-x-3 justify-center md:justify-start">
-                  {['The', 'Nav', 'Durga'].map((word) => (
+                  {['The', 'Diwali'].map((word) => (
                     <motion.span key={word} className="inline-block"
                       variants={{ hidden: { opacity: 0, y: 28 }, visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } } }}>
                       {word}
@@ -335,10 +360,10 @@ export default function HomePage() {
               </motion.div>
 
               <p className="text-cream-200 text-base md:text-lg leading-relaxed mb-8 max-w-lg">
-                From the nine hand-painted forms of Maa Durga to Garba-ready mandir backdrops, Chunri-draped Kalash sets and festive wooden décor — each piece is hand-picked to bring the Devi's blessings home through all nine divine nights.
+                From Laxmi-Ganesh idols and decorative diyas to divine room fragrances and festive gift sets — each piece is hand-picked to fill your home with light, fragrance and Maa Laxmi's blessings this Diwali.
               </p>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }} className="inline-block">
-                <Link to="/shop/nav-durga" className="btn-primary text-base px-8 py-4 relative overflow-hidden">
+                <Link to="/shop/diwali" className="btn-primary text-base px-8 py-4 relative overflow-hidden">
                   <span className="relative z-10 inline-flex items-center gap-2">
                     Explore Collection <ArrowRight size={18} />
                   </span>
@@ -354,7 +379,7 @@ export default function HomePage() {
 
             {/* Animated product medallion — moves faster than text on scroll for depth */}
             <motion.div className="relative shrink-0"
-              style={{ y: navDurgaImgY }}
+              style={{ y: seasonImgY }}
               initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.15 }}>
               <motion.div className="relative w-56 h-56 md:w-64 md:h-64"
                 animate={{ y: [0, -10, 0] }}
@@ -387,11 +412,11 @@ export default function HomePage() {
                 ))}
 
                 <div className="absolute inset-[5px] rounded-full overflow-hidden shadow-inner bg-[#F5ECD9]">
-                  {navDurgaImg ? (
+                  {seasonImg ? (
                     <motion.img
-                      key={navDurgaImg}
-                      src={thumbUrl(navDurgaImg, 500)}
-                      alt="Nav Durga Collection"
+                      key={seasonImg}
+                      src={seasonImg}
+                      alt="Diwali Collection"
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
                       className="w-full h-full object-cover"
                     />
@@ -402,7 +427,7 @@ export default function HomePage() {
                 <motion.span className="absolute -bottom-2 -right-2 text-4xl drop-shadow-lg"
                   animate={{ rotate: [0, -12, 12, 0] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}>
-                  🔱
+                  🪔
                 </motion.span>
                 <motion.div className="absolute -top-3 -left-3 bg-white rounded-full px-3 py-1.5 shadow-lg"
                   animate={{ y: [0, 6, 0] }}
