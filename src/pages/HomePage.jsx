@@ -80,7 +80,7 @@ export default function HomePage() {
   const [featured, setFeatured] = useState([])
   const [newArr, setNewArr]     = useState([])
   const [loading, setLoading]   = useState(true)
-  const [tab, setTab]           = useState('featured')
+  const [tab, setTab]           = useState('new')
   const [seasonImg, setSeasonImg] = useState(null)
 
   const seasonRef = useRef(null)
@@ -104,13 +104,18 @@ export default function HomePage() {
     axios.get('/api/products?sort=newest&limit=8')
       .then(r => { setNewArr(sortProductsByImage(r.data.products || [])); setLoading(false) })
       .catch(() => setLoading(false))
-    // Medallion shows the best photo from the Diwali category, or the poster crop until it has products
-    axios.get('/api/products?category=diwali&limit=8')
-      .then(r => {
-        const products = r.data.products || []
-        setSeasonImg(thumbUrl(bestProductImage(products), 500) || SEASON_FALLBACK_IMG)
-      })
+    // Medallion: photo pinned in admin settings, else the best photo from the
+    // "Diwali Collection" category, else a crop of the Diwali poster
+    const pickFromCategory = () => axios.get('/api/products?category=diwali-collection&limit=8')
+      .then(r => setSeasonImg(thumbUrl(bestProductImage(r.data.products || []), 500) || SEASON_FALLBACK_IMG))
       .catch(() => setSeasonImg(SEASON_FALLBACK_IMG))
+    axios.get('/api/settings')
+      .then(r => {
+        const pinned = r.data.settings?.diwaliHeroImage
+        if (pinned) setSeasonImg(thumbUrl(pinned, 500))
+        else pickFromCategory()
+      })
+      .catch(pickFromCategory)
   }, [])
 
   const s    = SLIDES[slide]
@@ -259,7 +264,7 @@ export default function HomePage() {
             </motion.div>
             <motion.div className="flex gap-2 bg-white rounded-full p-1 shadow-card"
               initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-              {[['featured','Best Sellers'],['new','New Arrivals']].map(([k,l]) => (
+              {[['new','New Arrivals'],['featured','Best Sellers']].map(([k,l]) => (
                 <motion.button key={k} onClick={() => setTab(k)} whileTap={{ scale: 0.93 }}
                   className={"px-5 py-2 rounded-full text-sm font-bold transition-all " +
                     (tab === k ? 'bg-saffron-500 text-white shadow-warm' : 'text-devotion-brown hover:bg-cream-100')}>
@@ -363,7 +368,7 @@ export default function HomePage() {
                 From Laxmi-Ganesh idols and decorative diyas to divine room fragrances and festive gift sets — each piece is hand-picked to fill your home with light, fragrance and Maa Laxmi's blessings this Diwali.
               </p>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }} className="inline-block">
-                <Link to="/shop/diwali" className="btn-primary text-base px-8 py-4 relative overflow-hidden">
+                <Link to="/shop/diwali-collection" className="btn-primary text-base px-8 py-4 relative overflow-hidden">
                   <span className="relative z-10 inline-flex items-center gap-2">
                     Explore Collection <ArrowRight size={18} />
                   </span>
